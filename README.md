@@ -5,7 +5,6 @@
 * <a href="#projects-goal">Project's goal</a>
 * <a href="#tasks-identification">Tasks' identification</a>
 * <a href="#planification">Planification</a>
-* <a href="#current-state">Current state</a>
 
 ## Project's goal
 
@@ -28,12 +27,70 @@ The game ends after some turns (1 turn means everyone was 1 time designer) or wh
 
 ## Tasks' identification
 
-TODO
+According to the general planification:
+
+* creation of the base HTML (including CSS) code's skeleton: login, menus and gamescreen's pages;
+* creation of a simple paint program based on canvas (Javascript);
+* creation of the database (using Zend framework);
+* implements pages' dynamics (forms actions and treatments, game's timers);
+* unit and integration tests.
 
 ## Planification
 
-TODO
+### General planification
 
-## Current state
+<img src="https://raw.github.com/theragebox/paint_something/master/documentation/general-planification.png" />
 
-TODO
+### Human resources
+
+<table>
+  <thead>
+    <th>Firstname</th>
+    <th>Lastname</th>
+    <th>Worktime</th>
+  </thead>
+  <tr>
+    <td>Dany</td>
+    <td>Jupille</td>
+    <td>8 * 45' per week</td>
+  </tr>
+  <tr>
+    <td>Etienne</td>
+    <td>Frank</td>
+    <td>8 * 45' per week</td>
+  </tr>
+  <tr>
+    <td>Mirco</td>
+    <td>Nasuti</td>
+    <td>8 * 45' per week</td>
+  </tr>
+</table>
+
+### Final planification
+
+<table>
+  <thead>
+    <th>State</th>
+    <th>Task</th>
+    <th>Worker</th>
+    <th>Accorded time</th>
+  </thead>
+  <tr>
+    <td>On work</td>
+    <td>Creation of the base HTML...</td>
+    <td>Dany Jupille</td>
+    <td>3 weeks (24 * 45')</td>
+  </tr>
+  <tr>
+    <td>On work</td>
+    <td>Creation of a simple paint...</td>
+    <td>Mirco Nasuti</td>
+    <td>3 weeks (24 * 45')</td>
+  </tr>
+  <tr>
+    <td>On work</td>
+    <td>Creation of the database...</td>
+    <td>Etienne Frank</td>
+    <td>3 weeks (24 * 45')</td>
+  </tr>
+</table>
