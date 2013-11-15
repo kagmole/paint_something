@@ -1,0 +1,17 @@
+01.11.2013
+- Définition des objectifs, planification et répartition des tâches.
+	Nous avons mis par cela écrit sur GitHub.
+- Relecture des parties utiles au projet de la présentation de "canvas" de Marco Aeberli et David Kuhner.
+- Premiers essais de dessins avec "canvas".
+- Début de codage du panel de dessin. Au stade actuel, 
+	il est possible de dessiner "au crayon" mais des tas de bugs sont présents.
+
+15.11.2013
+- Correction de la majorité des bugs du panel de dessin. Il reste
+	quelque chose de suspect au niveau de l'aspect des trait lorsque l'on
+	dessine très lentement en diagonal. Il y a également des problèmes
+	de performance sur Firefox.
+	(Voir paint_something/development_drafts/drawing/README pour la liste des bugs)
+- Changement du curseur lorsque la souris se trouve sur le panel de dessin
+- Ajout d'un bouton permettant d'extraire sous forme d'image le dessin produit
+	et l'afficher plus bas sur la page.
