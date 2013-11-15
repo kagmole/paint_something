@@ -79,18 +79,18 @@ According to the general planification:
     <td>On work</td>
     <td>Creation of the base HTML...</td>
     <td>Dany Jupille</td>
-    <td>3 weeks (24 * 45')</td>
+    <td>3 weeks (12 * 45')</td>
   </tr>
   <tr>
     <td>On work</td>
     <td>Creation of a simple paint...</td>
     <td>Mirco Nasuti</td>
-    <td>3 weeks (24 * 45')</td>
+    <td>3 weeks (12 * 45')</td>
   </tr>
   <tr>
     <td>On work</td>
     <td>Creation of the database...</td>
     <td>Etienne Frank</td>
-    <td>3 weeks (24 * 45')</td>
+    <td>3 weeks (12 * 45')</td>
   </tr>
 </table>
