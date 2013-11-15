@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr" dir="ltr">
+
+
+<head>
+
+  <title>Paint Something</title>
+
+  <style type="text/css">
+  canvas { border: 1px solid black; cursor : url("pencil.cur"), pointer; }
+  </style>
+
+  <script type="text/javascript">
+
+  var drawingWidth = 4; // width of lines, points, etc
+  
+  window.onload = initContext;
+
+  var canvas = null;
+  var exportButton = null;
+  
+  var c = null; // 2D context
+  
+  var p1 = null; // last point
+  var p2 = null; // current point
+
+  function Vector(x, y){
+    this.x=x;
+    this.y=y;
+  }
+
+  function initContext() {    
+    canvas = document.getElementById("myCanvas");
+    exportButton = document.getElementById("exportButton");
+
+    c = canvas.getContext('2d');
+    c.lineWidth = drawingWidth;
+
+    exportButton.onclick = exportCanvasImage;
+
+    canvas.onmousedown = handleMouseDown;
+    canvas.onmousemove = handleMouseMove;
+    canvas. onmouseup = handleMouseUp;
+
+    return true;
+  }
+
+  function drawLine(pointA, pointB) {
+    c.moveTo(pointA.x, pointA.y);
+    c.lineTo(pointB.x, pointB.y);
+    c.stroke();
+  }
+
+  function getMousePosition(event)
+  {
+    var mousePos = new Vector(0, 0);
+    var rect = canvas.getBoundingClientRect();
+
+    mousePos.x = event.clientX;
+    mousePos.y = event.clientY;
+
+    mousePos.x -= rect.left;
+    mousePos.y -= rect.top;
+
+    return mousePos;
+  }
+
+  function handleMouseMove(event) {
+    event = event || window.event;
+    if(event.which == 1)
+    {
+      p2 = getMousePosition(event);
+      drawLine(p1, p2);
+      p1 = p2; 
+    }
+  }
+
+
+  function handleMouseDown(event) {
+    event = event || window.event;
+    event.preventDefault();
+    if(event.which == 1)
+    {
+      p1 = getMousePosition(event);
+    }
+  }
+
+  function handleMouseUp(event) {
+    event = event || window.event;
+    if(event.which == 1)
+    {
+      p1 = null;
+      p2 = null;
+    }
+  }
+
+  function exportCanvasImage(){
+    var dataURL = canvas.toDataURL();
+    document.getElementById("canvasImage").src = dataURL;
+  }
+
+  </script>
+
+</head>
+
+
+<body>
+
+  <h1>Paint Something</h1>
+
+  <div id="paintingEditor">
+    <canvas id="myCanvas" width="800" height="600">
+      Your browser does not support the HTML5 canvas tag.
+    </canvas>
+    <button id="exportButton" type="button">Export image</button>
+  </div>
+
+  <div id="rendingPanel"> 
+    <img id="canvasImage">
+  </div>
+
+</body>
+
+
+</html>

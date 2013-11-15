@@ -1,0 +1,7 @@
+Ce dossier contient les fichiers nécessaires au panel de dessin.
+Actuellement, HTML, CSS et JavaScript sont regroupés
+dans le fichier drawing.html étant donné le peu de code HTML et CSS présent.
+
+BUGS :
+- Lorsque l'on dessine très lentement, les lignes peuvent sembler comme aliasées.
+- Sur Firefox, des problèmes de performance peuvent être rencontrés.
