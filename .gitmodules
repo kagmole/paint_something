@@ -1,0 +1,6 @@
+[submodule "website/vendor/ZfcUser"]
+	path = website/vendor/ZfcUser
+	url = https://github.com/ZF-Commons/ZfcUser.git
+[submodule "website/vendor/ZfcBase"]
+	path = website/vendor/ZfcBase
+	url = https://github.com/ZF-Commons/ZfcBase.git
