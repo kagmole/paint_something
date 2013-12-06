@@ -11,6 +11,8 @@
   canvas { border: 1px solid black; cursor : url("pencil.cur"), pointer; }
   </style>
 
+  <script type="text/javascript" src="jscolor/jscolor.js"></script>
+
   <script type="text/javascript">
 
   var drawingWidth = 4; // width of lines, points, etc
@@ -33,17 +35,24 @@
   function initContext() {    
     canvas = document.getElementById("myCanvas");
     exportButton = document.getElementById("exportButton");
+    colorPicker = document.getElementById("colorPicker");
 
     c = canvas.getContext('2d');
     c.lineWidth = drawingWidth;
 
     exportButton.onclick = exportCanvasImage;
+    colorPicker.onchange = changeColor;
 
     canvas.onmousedown = handleMouseDown;
     canvas.onmousemove = handleMouseMove;
-    canvas. onmouseup = handleMouseUp;
+    canvas.onmouseup = handleMouseUp;
 
     return true;
+  }
+
+  function changeColor()
+  {
+    c.strokeStyle = colorPicker.value;
   }
 
   function drawLine(pointA, pointB) {
@@ -71,7 +80,9 @@
     if(event.which == 1)
     {
       p2 = getMousePosition(event);
+      c.beginPath();
       drawLine(p1, p2);
+      c.closePath();
       p1 = p2; 
     }
   }
@@ -110,6 +121,7 @@
   <h1>Paint Something</h1>
 
   <div id="paintingEditor">
+    Color : <input id="colorPicker" class="color" value="000000">
     <canvas id="myCanvas" width="800" height="600">
       Your browser does not support the HTML5 canvas tag.
     </canvas>
