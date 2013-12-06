@@ -7,4 +7,3 @@ Ce dernier choix est dû au fait qu'il constitue une bibliothèque externe sous 
 BUGS :
 - Lorsque l'on dessine très lentement, les lignes peuvent sembler comme aliasées.
 - Sur Firefox, des problèmes de performance peuvent être rencontrés.
-- Sur Firefox, il n'est pas possible de changer de couleurs.

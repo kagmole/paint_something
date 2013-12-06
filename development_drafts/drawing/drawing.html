@@ -1,3 +1,5 @@
+<!-- This file contains the main code for the drawing panel -->
+
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr" dir="ltr">
@@ -7,42 +9,55 @@
 
   <title>Paint Something</title>
 
+  <!-- CSS -->
   <style type="text/css">
-  canvas { border: 1px solid black; cursor : url("pencil.cur"), pointer; }
+  canvas
+  {
+    border: 1px solid black; /* We add a border */
+    cursor : url("pencil.cur"), pointer; /* When the cursor is over the drawing panel, we set it as a pencil */
+  }
   </style>
 
+  <!-- We include the jscolor library so we can easily get a color picker -->
   <script type="text/javascript" src="jscolor/jscolor.js"></script>
 
+  <!-- Javascript -->
   <script type="text/javascript">
 
-  var drawingWidth = 4; // width of lines, points, etc
+  var drawingWidth = 4; // width of lines (and other drawings)
   
-  window.onload = initContext;
+  window.onload = initContext; // We initiate the context on page loading
 
-  var canvas = null;
-  var exportButton = null;
+  var canvas = null; // We define a variable for the canvas (drawing panel)
+  var exportButton = null; // We define a variable for the export button (used to export drawings as images)
+  var colorPicker = null; // We define a variable for the color picker
   
   var c = null; // 2D context
   
-  var p1 = null; // last point
-  var p2 = null; // current point
+  var p1 = null; // last point (begining of a line)
+  var p2 = null; // current point (end of a line)
 
+  // We define a vector as an 'x'and a 'y' coordinates
   function Vector(x, y){
     this.x=x;
     this.y=y;
   }
 
+  // We inittiate the canvas context
   function initContext() {    
+
+    // We get elements from html
     canvas = document.getElementById("myCanvas");
     exportButton = document.getElementById("exportButton");
     colorPicker = document.getElementById("colorPicker");
 
+    // We get the canvas context
     c = canvas.getContext('2d');
-    c.lineWidth = drawingWidth;
+    c.lineWidth = drawingWidth; // We set the line width
 
+    // We add actions for some events
     exportButton.onclick = exportCanvasImage;
     colorPicker.onchange = changeColor;
-
     canvas.onmousedown = handleMouseDown;
     canvas.onmousemove = handleMouseMove;
     canvas.onmouseup = handleMouseUp;
@@ -50,17 +65,20 @@
     return true;
   }
 
+  // Function to update the pencil color from the color picker
   function changeColor()
   {
     c.strokeStyle = colorPicker.value;
   }
 
+  // Function to draw a line from pointA to pointB (pointA and pointB are "Vector objects")
   function drawLine(pointA, pointB) {
     c.moveTo(pointA.x, pointA.y);
     c.lineTo(pointB.x, pointB.y);
     c.stroke();
   }
 
+  // Function to get the mouse current position as a "Vector object"
   function getMousePosition(event)
   {
     var mousePos = new Vector(0, 0);
@@ -75,9 +93,10 @@
     return mousePos;
   }
 
+  // Function that handles mouse move
   function handleMouseMove(event) {
-    event = event || window.event;
-    if(event.which == 1)
+    event = event || window.event; // compatibility trick
+    if(event.which == 1) // left mouse button
     {
       p2 = getMousePosition(event);
       c.beginPath();
@@ -87,25 +106,27 @@
     }
   }
 
-
+  // Function that handles mouse pressed
   function handleMouseDown(event) {
-    event = event || window.event;
+    event = event || window.event; // compatibility trick
     event.preventDefault();
-    if(event.which == 1)
+    if(event.which == 1) // left mouse button
     {
       p1 = getMousePosition(event);
     }
   }
 
+  // Function that handles mouse released
   function handleMouseUp(event) {
-    event = event || window.event;
-    if(event.which == 1)
+    event = event || window.event; // compatibility trick
+    if(event.which == 1) // left mouse button
     {
       p1 = null;
       p2 = null;
     }
   }
 
+  // Function that exports our canvas drawing as an image
   function exportCanvasImage(){
     var dataURL = canvas.toDataURL();
     document.getElementById("canvasImage").src = dataURL;

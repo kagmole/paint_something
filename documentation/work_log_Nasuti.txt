@@ -5,6 +5,7 @@
 - Premiers essais de dessins avec "canvas".
 - Début de codage du panel de dessin. Au stade actuel, 
 	il est possible de dessiner "au crayon" mais des tas de bugs sont présents.
+- Prise en main de GIT.
 
 15.11.2013
 - Correction de la majorité des bugs du panel de dessin. Il reste
@@ -15,3 +16,7 @@
 - Changement du curseur lorsque la souris se trouve sur le panel de dessin
 - Ajout d'un bouton permettant d'extraire sous forme d'image le dessin produit
 	et l'afficher plus bas sur la page.
+
+06.12.2013
+- Ajout de la gestion des couleurs dans l'éditeur.
+- Ajout de commentaires au code.
