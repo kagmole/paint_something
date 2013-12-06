@@ -1,10 +1,10 @@
 <?php
-namespace Game\Controller;
+namespace PaintSomething\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
-class GameController extends AbstractActionController {
+class HomeController extends AbstractActionController {
  
     public function indexAction() {
     
