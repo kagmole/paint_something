@@ -9,4 +9,12 @@ class HomeController extends AbstractActionController {
     public function indexAction() {
     
     }
+    
+    public function signinAction() {
+    
+    }
+    
+    public function signupAction() {
+    
+    }
 }

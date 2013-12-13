@@ -3,7 +3,6 @@ return array(
     'controllers' => array(
         'invokables' => array(
             'PaintSomething\Controller\Game' => 'PaintSomething\Controller\GameController',
-            'PaintSomething\Controller\GamesList' => 'PaintSomething\Controller\GamesListController',
             'PaintSomething\Controller\Home' => 'PaintSomething\Controller\HomeController',
             'PaintSomething\Controller\Member' => 'PaintSomething\Controller\MemberController',
             'PaintSomething\Controller\MembersList' => 'PaintSomething\Controller\MembersListController',
@@ -12,39 +11,27 @@ return array(
     'router' => array(
         'routes' => array(
             'home' => array(
-                'type' => 'literal',
+                'type' => 'segment',
                 'options' => array(
-                    'route' => '/',
+                    'route' => '/[:action]',
                     'defaults' => array(
                         'action' => 'index',
                         'controller' => 'PaintSomething\Controller\Home',
                     ),
                 ),
+                
             ),
             'game' => array(
                 'type' => 'segment',
                 'options' => array(
-                    'route' => '/game/:id',
+                    'route' => '/game[/:action][/:id]',
                     'constraints' => array(
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'id' => '[0-9]+',
                     ),
                     'defaults' => array(
                         'action' => 'index',
                         'controller' => 'PaintSomething\Controller\Game',
-                    ),
-                ),
-            ),
-            'games-list' => array(
-                'type' => 'segment',
-                'options' => array(
-                    'route' => '/games-list[/:parameter][/:value]',
-                    'constraints' => array(
-                        'parameters' => '[a-zA-Z]+',
-                        'value' => '[a-zA-Z]+',
-                    ),
-                    'defaults' => array(
-                        'action' => 'index',
-                        'controller' => 'PaintSomething\Controller\GamesList',
                     ),
                 ),
             ),

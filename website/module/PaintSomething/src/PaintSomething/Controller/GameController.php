@@ -9,4 +9,12 @@ class GameController extends AbstractActionController {
     public function indexAction() {
     
     }
+    
+    public function newAction() {
+    
+    }
+    
+    public function playAction() {
+    
+    }
 }
