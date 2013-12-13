@@ -2,9 +2,11 @@
 return array(
     'controllers' => array(
         'invokables' => array(
-            'PaintSomething\Controller\Games' => 'PaintSomething\Controller\GamesController',
+            'PaintSomething\Controller\Game' => 'PaintSomething\Controller\GameController',
+            'PaintSomething\Controller\GamesList' => 'PaintSomething\Controller\GamesListController',
             'PaintSomething\Controller\Home' => 'PaintSomething\Controller\HomeController',
-            'PaintSomething\Controller\Members' => 'PaintSomething\Controller\MembersController',
+            'PaintSomething\Controller\Member' => 'PaintSomething\Controller\MemberController',
+            'PaintSomething\Controller\MembersList' => 'PaintSomething\Controller\MembersListController',
         ),
     ),
     'router' => array(
@@ -19,31 +21,58 @@ return array(
                     ),
                 ),
             ),
-            'members' => array(
+            'game' => array(
                 'type' => 'segment',
                 'options' => array(
-                    'route' => '/members[/[:slug_name[/:action]]]',
+                    'route' => '/game/:id',
                     'constraints' => array(
-                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'slug_name' => '[a-zA-Z]+',
+                        'id' => '[0-9]+',
                     ),
                     'defaults' => array(
                         'action' => 'index',
-                        'controller' => 'PaintSomething\Controller\Members',
+                        'controller' => 'PaintSomething\Controller\Game',
                     ),
                 ),
             ),
-            'games' => array(
+            'games-list' => array(
                 'type' => 'segment',
                 'options' => array(
-                    'route' => '/games[/[:slug_id[/:action]]]',
+                    'route' => '/games-list[/:parameter][/:value]',
                     'constraints' => array(
-                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'slug_id' => '[0-9]+',
+                        'parameters' => '[a-zA-Z]+',
+                        'value' => '[a-zA-Z]+',
                     ),
                     'defaults' => array(
                         'action' => 'index',
-                        'controller' => 'PaintSomething\Controller\Games',
+                        'controller' => 'PaintSomething\Controller\GamesList',
+                    ),
+                ),
+            ),
+            'member' => array(
+                'type' => 'segment',
+                'options' => array(
+                    'route' => '/member/:name[/:action]',
+                    'constraints' => array(
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'name' => '[a-zA-Z]+',
+                    ),
+                    'defaults' => array(
+                        'action' => 'index',
+                        'controller' => 'PaintSomething\Controller\Member',
+                    ),
+                ),
+            ),
+            'members-list' => array(
+                'type' => 'segment',
+                'options' => array(
+                    'route' => '/members-list[/:parameter][/:value]',
+                    'constraints' => array(
+                        'parameter' => '[a-zA-Z]+',
+                        'value' => '[a-zA-Z]+',
+                    ),
+                    'defaults' => array(
+                        'action' => 'index',
+                        'controller' => 'PaintSomething\Controller\MembersList',
                     ),
                 ),
             ),
