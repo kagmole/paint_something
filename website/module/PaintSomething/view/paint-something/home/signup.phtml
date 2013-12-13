@@ -1,1 +1,41 @@
-HOME - SIGNUP.PHTML
+<?php
+$title = 'Sign up';
+$this->headTitle($title);
+?>
+<form class="form-horizontal" role="form">
+	<div class="form-group">
+		<label class="col-sm-2 control-label">Email</label>
+		<div class="col-sm-3">
+			<input type="text" class="form-control" placeholder="Enter your email">
+		</div>
+    </div>
+    <div class="form-group">
+		<label class="col-sm-2 control-label">Username</label>
+		<div class="col-sm-3">
+			<input type="email" class="form-control" placeholder="Enter your username">
+		</div>
+    </div>  
+    <div class="form-group">
+		<label class="col-sm-2 control-label">Password</label>
+		<div class="col-sm-3">
+			<input type="password" class="form-control" placeholder="Password">
+		</div>
+    </div>
+    <div class="form-group">
+		<label class="col-sm-2 control-label">Password check</label>
+		<div class="col-sm-3">
+			<input type="password" class="form-control" placeholder="Re-enter your Password">
+		</div>
+    </div>
+
+    <div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+			<button type="submit" class="btn btn-default">Sign in</button>
+		</div>
+    </div>
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+			<button type="button" class="btn btn-link"> Got an account ? Go sign in !</button>
+		</div>
+	</div>
+</form>
