@@ -20,3 +20,9 @@
 06.12.2013
 - Ajout de la gestion des couleurs dans l'éditeur.
 - Ajout de commentaires au code.
+
+13.12.2013
+- Mise au point avec le groupe
+- Ajout de la vue "Edit Profil"
+- Ajout de la vue "My Friends"
+- Ajout de la vue "My Games
