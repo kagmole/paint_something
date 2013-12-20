@@ -1,4 +1,4 @@
-01.11.2013
+﻿01.11.2013
 - Définition des objectifs, planification et répartition des tâches.
 	Nous avons mis par cela écrit sur GitHub.
 - Relecture des parties utiles au projet de la présentation de "canvas" de Marco Aeberli et David Kuhner.
@@ -26,3 +26,8 @@
 - Ajout de la vue "Edit Profil"
 - Ajout de la vue "My Friends"
 - Ajout de la vue "My Games
+
+20.12.2013
+- Deploiment sur le serveur de l'école
+- Ajout de la vue "play-game"
+- Ajout de la vue "new game"
