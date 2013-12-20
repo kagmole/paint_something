@@ -15,26 +15,28 @@ class MembersListController extends AbstractActionController {
         }
         return $this->usersTable;
     }
-    
-    public function editAction() {
-    
-    }
-    
-    public function friendsAction() {
-    
-    }
-    
-    public function gamesAction() {
-    
-    }
  
     public function indexAction() {
+        /*$parameter = $this->params()->fromRoute('parameter');
+        $value = $this->params()->fromRoute('value');
+        
+        $startId = 0;
+        
+        // If we have a parameter AND a value for it
+        if (isset($parameter) && isset($value)) {
+            switch ($parameter) {
+                case 'page':
+                    $startId = ($value < 1) ? 0 : 20 * ($value - 1);
+                    break;
+                default:
+                    // Unexpected parameter
+                    break;
+            }
+        }
+        $usersRangeData = $this->getUsersTable()->fetchRange($startId, 1);*/
+    
         return new ViewModel(array(
             'users' => $this->getUsersTable()->fetchAll(),
         ));
-    }
-    
-    public function profileAction() {
-    
     }
 }

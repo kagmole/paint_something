@@ -55,7 +55,7 @@ return array(
                     'route' => '/members-list[/:parameter][/:value]',
                     'constraints' => array(
                         'parameter' => '[a-zA-Z]+',
-                        'value' => '[a-zA-Z]+',
+                        'value' => '[0-9]+',
                     ),
                     'defaults' => array(
                         'action' => 'index',
