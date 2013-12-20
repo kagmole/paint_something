@@ -1,31 +1,21 @@
-<h1>My Friends</h1>
-<table cellpadding="10">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Last connection</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Albert</td>
-            <td>10/11/2013</td>
-        </tr>
-        <tr>
-            <td>Bob</td>
-            <td>12/09/2013</td>
-        </tr>
-        <tr>
-            <td>Damiano</td>
-            <td>13/12/2013</td>
-        </tr>
-        <tr>
-            <td>Patrick</td>
-            <td>07/11/2013</td>
-        </tr>
-        <tr>
-            <td>Julien</td>
-            <td>03/11/2013</td>
-        </tr>
-    </tbody>
+<?php
+$title = 'List of friends';
+$this->headTitle($title);
+?>
+<h1><?php echo $this->escapeHtml($title); ?></h1>
+<table class="table">
+    <tr>
+        <th>Username</th>
+        <th>E-mail</th>
+        <th>Last connection</th>
+        <th></th>
+    </tr>
+<?php foreach ($friends as $friend) : ?>
+    <tr>
+        <td><?php echo $this->escapeHtml($friend->login);?></td>
+        <td><?php echo $this->escapeHtml($friend->email);?></td>
+        <td><?php echo $this->escapeHtml($friend->date_last_connection);?></td>
+        <td><a href="<?php echo $this->url('member', array('name' => $this->escapeHtml($friend->login)));?>">More...</a></td>
+    </tr>
+<?php endforeach; ?>
 </table>

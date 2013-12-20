@@ -1,31 +1,29 @@
-<h1>My Games</h1>
-<h2>Running</h2>
-<table cellpadding="10">
-    <tbody>
-        <tr>
-            <td>Youplaboum</td>
-        </tr>
-        <tr>
-            <td>I have no idea what I'm doing</td>
-        </tr>
-        <tr>
-            <td>Grumfff</td>
-        </tr>
-    </tbody>
+<?php
+$title = 'List of games';
+$this->headTitle($title);
+?>
+<h1><?php echo $this->escapeHtml($title); ?></h1>
+<h2>Pending</h2>
+<?php foreach ($pending_games as $game) : ?>
+    <tr>
+        <td><?php echo $this->escapeHtml('Game N°' . $game->id);?></td>
+        <td><a href="<?php echo $this->url('game', array('action' => 'play', 'id' => $game->id)); ?>">More...</a></td>
+    </tr>
+<?php endforeach; ?>
 </table>
-
-<h2>Terminated</h2>
-
-<table cellpadding="10">
-    <tbody>
-        <tr>
-            <td>OldLady</td>
-        </tr>
-        <tr>
-            <td>Schtroumpf</td>
-        </tr>
-        <tr>
-            <td>SuperGame</td>
-        </tr>
-    </tbody>
+<h2>Running</h2>
+<?php foreach ($running_games as $game) : ?>
+    <tr>
+        <td><?php echo $this->escapeHtml('Game N°' . $game->id);?></td>
+        <td><a href="<?php echo $this->url('game', array('action' => 'play', 'id' => $game->id)); ?>">More...</a></td>
+    </tr>
+<?php endforeach; ?>
+</table>
+<h2>Finished</h2>
+<?php foreach ($finished_games as $game) : ?>
+    <tr>
+        <td><?php echo $this->escapeHtml('Game N°' . $game->id);?></td>
+        <td><a href="<?php echo $this->url('game', array('action' => 'play', 'id' => $game->id)); ?>">More...</a></td>
+    </tr>
+<?php endforeach; ?>
 </table>

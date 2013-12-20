@@ -1,25 +1,31 @@
+<?php
+$user = $users->current();
+$title =  $user->login . "'s profile";
+$this->headTitle($title);
+?>
+
 <div class="row">
 	<div class="col-md-4">
 		<dl class="dl-horizontal">
 			<dt>Username</dt>
-			<dd>[USERNAME]</dd>
+			<dd><?php echo $user->login; ?></dd>
 			<dt>Email</dt>
-			<dd>[EMAIL]</dd>
+			<dd><?php echo $user->email; ?></dd>
 			<dt>Last connection</dt>
-			<dd>[LAST CONNECTION]</dd>
+			<dd><?php echo $user->date_last_connection; ?></dd>
 			<dt>Inscription date</dt>
-			<dd>[INSCREPTION DATE]</dd>
+			<dd><?php echo $user->date_creation; ?></dd>
 		</dl>
 	</div>
 	<div class="col-md-8">
 		<div class="row">
-		<button type="button" class="btn btn-link">Edit</button>
+			<a class="btn btn-link" href="<?php echo $this->url('member', array('name' => $this->escapeHtml($user->login), 'action' => 'edit'));?>">Edit</a>
 		</div>
 		<div class="row">
-		<button type="button" class="btn btn-link">Friends</button>
+			<a class="btn btn-link" href="<?php echo $this->url('member', array('name' => $this->escapeHtml($user->login), 'action' => 'friends'));?>">Friends</a>
 		</div>
 		<div class="row">
-		<button type="button" class="btn btn-link">Games</button>
+			<a class="btn btn-link" href="<?php echo $this->url('member', array('name' => $this->escapeHtml($user->login), 'action' => 'games'));?>">Games</a>
 		</div>
 	</div>
 </div>
