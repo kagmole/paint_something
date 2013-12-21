@@ -3,40 +3,36 @@ $user = $users->current();
 $title =  'Edit ' . $user->login . "'s profile";
 $this->headTitle($title);
 ?>
+<?php if (!empty($info)) : ?>
+<div class="alert alert-danger">
+	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	<strong><?php echo $this->escapeHtml($info); ?></strong>
+</div>
+<?php endif; ?>
+<h1><?php echo $this->escapeHtml($title); ?></h1>
+<?php
+$form->setAttribute('action', $this->url('member', array('name' => $this->escapeHtml($user->login), 'action' => 'edit')));
+$form->get('email')->setValue($this->escapeHtml($user->email));
+$form->prepare();
 
+echo $this->form()->openTag($form);
+?>
 <div class="row">
 	<div class="col-md-4">
 		<dl class="dl-horizontal">
-			<dt>Login</dt>
-			<dd><?php echo $user->login; ?></dd>
 			<dt>E-mail</dt>
-			<dd><?php echo $user->email; ?></dd>
-			<dt>Old password</dt>
-			<dd>[FORM PASSWORD]</dd>
-			<dt>Password</dt>
-			<dd>[FORM PASSWORD]</dd>
+			<dd><?php echo $this->formRow($form->get('email')); ?></dd>
+			<dt>New password</dt>
+			<dd><?php echo $this->formRow($form->get('new-password')); ?></dd>
 			<dt>Confirm password</dt>
-			<dd>[FORM PASSWORD]</dd>
+			<dd><?php echo $this->formRow($form->get('confirm-password')); ?></dd>
 		</dl>
-	</div>
-	<div class="col-md-8">
 		<div class="row">
-			<a class="btn btn-link" href="<?php echo $this->url('member', array('name' => $this->escapeHtml($user->login)));?>">Save changes</a>
-		</div>
-		<div class="row">
+			<?php echo $this->formSubmit($form->get('submit-edit-member')); ?>
 			<a class="btn btn-link" href="<?php echo $this->url('member', array('name' => $this->escapeHtml($user->login)));?>">Cancel</a>
 		</div>
 	</div>
 </div>
-
-<!--<form action="edit">
-    
-    Login : <input type="text" name="login" value="Michel" /><br/><br/>
-    Password : <input type="password" name="password" value="pass123" /><br/><br/>
-    PasswordComfirm : <input type="password" name="password_comfirm" value="pass123" /><br/><br/>
-    E-mail : <input type="text" name="email" value="michel.dupond@gmail.com" /><br/><br/>
-
-    <input type="submit" value="Save changes" />
-    <input type="reset" value="Cancel" />
-
-</form>-->
+<?php
+echo $this->form()->closeTag();
+?>

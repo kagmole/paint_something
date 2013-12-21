@@ -2,7 +2,9 @@
 namespace PaintSomething\Controller;
 
 use PaintSomething\Form\AddFriendForm;
+use PaintSomething\Form\EditMemberForm;
 use PaintSomething\Model\Friends;
+use PaintSomething\Model\Users;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
@@ -46,8 +48,38 @@ class MemberController extends AbstractActionController {
 	}
     
     public function editAction() {
+		$userId = $this->getUsersTable()->getUserIdByLogin($this->params()->fromRoute('name'));
+		$info = '';
+	
+		$form = new EditMemberForm();
+		$request = $this->getRequest();
+		
+		if ($request->isPost()) {
+			$user = new Users();
+			$form->setInputFilter($user->getInputFilter());
+			$form->setData($request->getPost());
+			
+			if ($form->isValid()) {
+				// TODO Check email validity
+				$data = array(
+					'email' => $form->getData()['email'],
+				);
+				
+				if (!empty($form->getData()['new-password'])) {
+					if ($form->getData()['new-password'] == $form->getData()['confirm-password']) {
+						$data['password'] = sha1($form->getData()['new-password']);
+					} else {
+						$info = 'The two passwords were not the same.';
+					}
+				}
+				$this->getUsersTable()->editUsersByIdWithData($userId, $data);
+			}
+		}
+	
 		return new ViewModel(array(
             'users' => $this->getUsersTable()->fetchUserByLogin($this->params()->fromRoute('name')),
+			'form' => $form,
+			'info' => $info,
         ));
     }
     
@@ -89,6 +121,7 @@ class MemberController extends AbstractActionController {
             'friends' => (count($friendsId) > 0) ? $this->getUsersTable()->fetchUsersById($friendsId) : array(),
 			'form' => $form,
 			'info' => $info,
+			'login' => $this->params()->fromRoute('name'),
         ));
     }
     

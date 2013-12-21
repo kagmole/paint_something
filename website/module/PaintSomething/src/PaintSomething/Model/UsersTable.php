@@ -52,4 +52,22 @@ class UsersTable {
 			return -1;
 		}
 	}
+	
+	public function getUserPasswordByLogin($login) {
+		$select = new Select();
+		$select->from('users');
+		$select->columns(array('password'));
+		$select->where->like('login', $login);
+		
+		$resultSet = $this->tableGateway->selectWith($select);
+		
+		return $resultSet->current()->password;
+	}
+	
+	public function editUsersByIdWithData($userId, $data) {
+		$where = new Where();    
+		$where->like('id', $userId);	
+		
+		$this->tableGateway->update($data, $where);
+	}
 }

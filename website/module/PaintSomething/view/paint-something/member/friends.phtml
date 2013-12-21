@@ -1,16 +1,16 @@
 <?php
-$title = 'List of friends';
+$title = 'List of ' . $login . '\'s friends';
 $this->headTitle($title);
 ?>
 <?php if (!empty($info)) : ?>
 <div class="alert alert-danger">
 	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-	<strong><?php echo $info; ?></strong>
+	<strong><?php echo $this->escapeHtml($info); ?></strong>
 </div>
 <?php endif; ?>
 <h1><?php echo $this->escapeHtml($title); ?></h1>
 <?php
-$form->setAttribute('action', $this->url('member', array('name' => 'Daniel', 'action' => 'friends')));
+$form->setAttribute('action', $this->url('member', array('name' => $login, 'action' => 'friends')));
 $form->prepare();
 
 echo $this->form()->openTag($form);
