@@ -121,8 +121,19 @@
 
   // Function that exports our canvas drawing as an image
   function exportCanvasImage(){
-    var dataURL = canvas.toDataURL();
-    document.getElementById("canvasImage").src = dataURL;
+	var dataURL = canvas.toDataURL();
+	document.getElementById("canvasImage").src = dataURL;
+	
+	$.ajax({
+		type: "POST",
+		url: "<?php echo $this->basePath('savePicture.php')?>",
+		data: { 
+			imgBase64: dataURL,
+			gameId: "<?php echo $gameId;?>"
+		}
+	}).done(function(o) {
+		console.log('saved'); 
+	});
   }
 
   </script>
