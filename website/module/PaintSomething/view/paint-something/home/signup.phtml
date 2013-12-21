@@ -2,40 +2,72 @@
 $title = 'Sign up';
 $this->headTitle($title);
 ?>
-<form class="form-horizontal" role="form">
-	<div class="form-group">
-		<label class="col-sm-2 control-label">Email</label>
-		<div class="col-sm-3">
-			<input type="text" class="form-control" placeholder="Enter your email">
-		</div>
-    </div>
-    <div class="form-group">
-		<label class="col-sm-2 control-label">Username</label>
-		<div class="col-sm-3">
-			<input type="email" class="form-control" placeholder="Enter your username">
-		</div>
-    </div>  
-    <div class="form-group">
-		<label class="col-sm-2 control-label">Password</label>
-		<div class="col-sm-3">
-			<input type="password" class="form-control" placeholder="Password">
-		</div>
-    </div>
-    <div class="form-group">
-		<label class="col-sm-2 control-label">Password check</label>
-		<div class="col-sm-3">
-			<input type="password" class="form-control" placeholder="Re-enter your Password">
-		</div>
-    </div>
 
-    <div class="form-group">
-		<div class="col-sm-offset-2 col-sm-10">
-			<button type="submit" class="btn btn-default">Sign in</button>
-		</div>
-    </div>
-	<div class="form-group">
-		<div class="col-sm-offset-2 col-sm-10">
-			<button type="button" class="btn btn-link"> Got an account ? Go sign in !</button>
-		</div>
+<?php if (!empty($info)) : ?>
+<div class="alert alert-danger">
+	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	<strong><?php echo $this->escapeHtml($info); ?></strong>
+</div>
+<?php endif; ?>
+
+<h1><?php echo $this->escapeHtml($title); ?></h1>
+
+<?php
+$form->setAttribute('action', $this->url('home', array('action' => 'signup')));
+$form->setAttribute('class', 'form-horizontal');
+$form->setAttribute('role', 'form');
+
+$form->get('email')->setAttribute('class', 'form-control');
+$form->get('email')->setAttribute('id', 'inputEmail');
+$form->get('email')->setAttribute('placeholder', 'Enter your email');
+
+$form->get('login')->setAttribute('class', 'form-control');
+$form->get('login')->setAttribute('id', 'inputLogin');
+$form->get('login')->setAttribute('placeholder', 'Enter your username');
+
+$form->get('password')->setAttribute('class', 'form-control');
+$form->get('password')->setAttribute('id', 'inputPassword');
+$form->get('password')->setAttribute('placeholder', 'Enter your password for this account');
+
+$form->get('confirm-password')->setAttribute('class', 'form-control');
+$form->get('confirm-password')->setAttribute('id', 'inputConfirmPassword');
+$form->get('confirm-password')->setAttribute('placeholder', 'Confirm your password');
+
+$form->get('submit-sign-up')->setAttribute('class', 'btn btn-default');
+
+$form->prepare();
+?>
+
+<?php echo $this->form()->openTag($form); ?>
+<div class="form-group">
+	<label class="col-sm-2 control-label" for="inputEmail">Email</label>
+	<div class="col-sm-3">
+		<?php echo $this->formRow($form->get('email')); ?>
 	</div>
-</form>
+</div>
+<div class="form-group">
+	<label class="col-sm-2 control-label" for="inputLogin">Username</label>
+	<div class="col-sm-3">
+		<?php echo $this->formRow($form->get('login')); ?>
+	</div>
+</div>  
+<div class="form-group">
+	<label class="col-sm-2 control-label" for="inputPassword">Password</label>
+	<div class="col-sm-3">
+		<?php echo $this->formRow($form->get('password')); ?>
+	</div>
+</div>
+<div class="form-group">
+	<label class="col-sm-2 control-label" for="inputConfirmPassword">Confirm password</label>
+	<div class="col-sm-3">
+		<?php echo $this->formRow($form->get('confirm-password')); ?>
+	</div>
+</div>
+
+<div class="form-group">
+	<div class="col-sm-offset-2 col-sm-10">
+		<?php echo $this->formSubmit($form->get('submit-sign-up')); ?>
+		<a class="btn btn-link" href="<?php echo $this->url('home', array('action' => 'signin'));?>">Got an account? Go sign in!</a>
+	</div>
+</div>
+<?php echo $this->form()->closeTag(); ?>

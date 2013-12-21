@@ -68,6 +68,10 @@ class UsersTable {
 		}
 	}
 	
+	public function saveUsersWithData($data) {		
+		$this->tableGateway->insert($data);
+	}
+	
 	public function editUsersByIdWithData($userId, $data) {
 		$where = new Where();    
 		$where->like('id', $userId);	

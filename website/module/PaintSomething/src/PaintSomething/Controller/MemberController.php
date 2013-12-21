@@ -60,7 +60,6 @@ class MemberController extends AbstractActionController {
 			$form->setData($request->getPost());
 			
 			if ($form->isValid()) {
-				// TODO Check email validity
 				$data = array(
 					'email' => $form->getData()['email'],
 				);

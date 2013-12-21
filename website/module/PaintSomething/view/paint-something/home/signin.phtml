@@ -31,26 +31,22 @@ $form->prepare();
 ?>
 
 <?php echo $this->form()->openTag($form); ?>
-	<div class="form-group">
-		<label for="inputLogin" class="col-sm-2 control-label">Login</label>
-		<div class="col-sm-3">
-			<?php echo $this->formRow($form->get('login')); ?>
-		</div>
-    </div>
-    <div class="form-group">
-		<label for="inputPassword" class="col-sm-2 control-label">Password</label>
-		<div class="col-sm-3">
-			<?php echo $this->formRow($form->get('password')); ?>
-		</div>
-    </div>
-    <div class="form-group">
-		<div class="col-sm-offset-2 col-sm-10">
-			<?php echo $this->formSubmit($form->get('submit-sign-in')); ?>
-		</div>
-    </div>
-	<div class="form-group">
-		<div class="col-sm-offset-2 col-sm-10">
-			<button type="button" class="btn btn-link">Not signed up ? Come join us !</button>
-		</div>
+<div class="form-group">
+	<label for="inputLogin" class="col-sm-2 control-label">Login</label>
+	<div class="col-sm-3">
+		<?php echo $this->formRow($form->get('login')); ?>
 	</div>
+</div>
+<div class="form-group">
+	<label for="inputPassword" class="col-sm-2 control-label">Password</label>
+	<div class="col-sm-3">
+		<?php echo $this->formRow($form->get('password')); ?>
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-offset-2 col-sm-10">
+		<?php echo $this->formSubmit($form->get('submit-sign-in')); ?>
+		<a class="btn btn-link" href="<?php echo $this->url('home', array('action' => 'signup'));?>">Not signed up? Come join us!</a>
+	</div>
+</div>
 <?php echo $this->form()->closeTag(); ?>
