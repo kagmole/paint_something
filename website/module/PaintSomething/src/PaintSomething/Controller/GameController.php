@@ -95,4 +95,5 @@ class GameController extends AbstractActionController {
 			'gameId'=>$this->params()->fromRoute('id'),
 		));
     }
+
 }

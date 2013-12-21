@@ -108,4 +108,18 @@ class HomeController extends AbstractActionController {
 			'info' => $info,
         ));
     }
+	
+	public function aboutAction(){
+		
+	}
+	
+	public function logoutAction(){
+	
+		$nm_authInfo = new Container('authentification_info');
+		if(isset($nm_authInfo->login)){
+			unset($nm_authInfo->login);
+		}
+		
+		return $this->redirect()->toRoute('home');
+	}
 }
