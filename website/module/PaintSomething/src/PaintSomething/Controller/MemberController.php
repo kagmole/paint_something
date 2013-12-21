@@ -7,6 +7,7 @@ use PaintSomething\Model\Friends;
 use PaintSomething\Model\Users;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
+use Zend\Session\Container;
 
 class MemberController extends AbstractActionController {
 
@@ -48,6 +49,12 @@ class MemberController extends AbstractActionController {
 	}
     
     public function editAction() {
+		// if the user isn't connected redirect to home
+		$nm_authInfo = new Container('authentification_info');
+		if(!isset($nm_authInfo->login)){
+			return $this->redirect()->toRoute('home', array('action' => 'signin'));
+		}
+		
 		$userId = $this->getUsersTable()->getUserIdByLogin($this->params()->fromRoute('name'));
 		$info = '';
 	
@@ -83,6 +90,12 @@ class MemberController extends AbstractActionController {
     }
     
     public function friendsAction() {
+		// if the user isn't connected redirect to home
+		$nm_authInfo = new Container('authentification_info');
+		if(!isset($nm_authInfo->login)){
+			return $this->redirect()->toRoute('home', array('action' => 'signin'));
+		}
+		
 		$userId = $this->getUsersTable()->getUserIdByLogin($this->params()->fromRoute('name'));
 		$friendsId = $this->getFriendsTable()->getFriendsIdOfUserById($userId);
 		$info = '';
@@ -125,6 +138,13 @@ class MemberController extends AbstractActionController {
     }
     
     public function gamesAction() {
+	
+		// if the user isn't connected redirect to home
+		$nm_authInfo = new Container('authentification_info');
+		if(!isset($nm_authInfo->login)){
+			return $this->redirect()->toRoute('home', array('action' => 'signin'));
+		}
+		
 		$userId = $this->getUsersTable()->getUserIdByLogin($this->params()->fromRoute('name'));
 		$gamesId = $this->getUsersGamesTable()->getGamesIdOfUserById($userId);
 		
@@ -136,6 +156,12 @@ class MemberController extends AbstractActionController {
     }
     
     public function indexAction() {	
+		// if the user isn't connected redirect to home
+		$nm_authInfo = new Container('authentification_info');
+		if(!isset($nm_authInfo->login)){
+			return $this->redirect()->toRoute('home', array('action' => 'signin'));
+		}
+		
 		return new ViewModel(array(
             'users' => $this->getUsersTable()->fetchUserByLogin($this->params()->fromRoute('name')),
         ));
