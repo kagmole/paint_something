@@ -7,7 +7,7 @@ use Zend\View\Model\ViewModel;
 class GameController extends AbstractActionController {
 
     public function indexAction() {
-    
+		
     }
     
     public function newAction() {
@@ -19,4 +19,5 @@ class GameController extends AbstractActionController {
 			'gameId'=>$this->params()->fromRoute('id'),
 		));
     }
+
 }
