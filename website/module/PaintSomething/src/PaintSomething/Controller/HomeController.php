@@ -109,6 +109,10 @@ class HomeController extends AbstractActionController {
         ));
     }
 	
+	public function aboutAction(){
+		
+	}
+	
 	public function logoutAction(){
 	
 		$nm_authInfo = new Container('authentification_info');
