@@ -11,28 +11,56 @@ $this->headTitle($title);
 <?php endif; ?>
 <h1><?php echo $this->escapeHtml($title); ?></h1>
 <?php
+$form->setAttribute('class', 'form-horizontal');
+$form->setAttribute('role', 'form');
 $form->setAttribute('action', $this->url('member', array('name' => $this->escapeHtml($user->login), 'action' => 'edit')));
+
 $form->get('email')->setValue($this->escapeHtml($user->email));
+$form->get('email')->setAttribute('class','form-control');
+$form->get('email')->setAttribute('type','email');
+$form->get('email')->setAttribute('id','inputEmail1');
+
+$form->get('new-password')->setAttribute('class','form-control');
+$form->get('new-password')->setAttribute('type','password');
+$form->get('new-password')->setAttribute('id','inputPassword1');
+
+$form->get('confirm-password')->setAttribute('class','form-control');
+$form->get('confirm-password')->setAttribute('type','password');
+$form->get('confirm-password')->setAttribute('id','inputPassword2');
+
+$form->get('submit-edit-member')->setAttribute('class','btn btn-default');
+$form->get('submit-edit-member')->setAttribute('type','submit');
+
 $form->prepare();
 
 echo $this->form()->openTag($form);
 ?>
-<div class="row">
-	<div class="col-md-4">
-		<dl class="dl-horizontal">
-			<dt>Email</dt>
-			<dd><?php echo $this->formRow($form->get('email')); ?></dd>
-			<dt>New password</dt>
-			<dd><?php echo $this->formRow($form->get('new-password')); ?></dd>
-			<dt>Confirm password</dt>
-			<dd><?php echo $this->formRow($form->get('confirm-password')); ?></dd>
-		</dl>
-		<div class="row">
-			<?php echo $this->formSubmit($form->get('submit-edit-member')); ?>
-			<a class="btn btn-link" href="<?php echo $this->url('member', array('name' => $this->escapeHtml($user->login)));?>">Cancel</a>
-		</div>
+
+<div class="form-group">
+	<label for="inputEmail1" class="col-sm-2 control-label">Email</label>
+	<div class="col-sm-3">
+		<?php echo $this->formRow($form->get('email')); ?>
 	</div>
 </div>
+<div class="form-group">
+	<label for="inputPassword1" class="col-sm-2 control-label">New password</label>
+	<div class="col-sm-3">
+		<?php echo $this->formRow($form->get('new-password')); ?>
+	</div>
+</div>
+<div class="form-group">
+	<label for="inputPassword2" class="col-sm-2 control-label">Confirm password</label>
+	<div class="col-sm-3">
+		<?php echo $this->formRow($form->get('confirm-password')); ?>
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-offset-2 col-sm-10">
+		<?php echo $this->formSubmit($form->get('submit-edit-member')); ?>
+		<a class="btn btn-link" href="<?php echo $this->url('member', array('name' => $this->escapeHtml($user->login)));?>">Cancel</a>
+	</div>
+</div>
+
 <?php
 echo $this->form()->closeTag();
 ?>
