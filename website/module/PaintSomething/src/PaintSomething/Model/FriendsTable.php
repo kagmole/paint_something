@@ -35,4 +35,14 @@ class FriendsTable {
 		
 		return $friendsId;
     }
+	
+	public function saveFriends(Friends $friend) {
+        $data = array(
+            'id_user1' => $friend->id_user1,
+			'id_user2' => $friend->id_user2,
+            'confirmed' => $friend->confirmed,
+        );
+		
+		$this->tableGateway->insert($data);
+    }
 }
