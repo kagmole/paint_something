@@ -1,22 +1,55 @@
-<form action="newgame">
-    <table border="1" cellspacing="10">
-        <thead>
-            <tr>
-                <th>Friends</th>
-                <th>Add to game</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Jean</td>
-                <td><input type="checkbox" name="Add" value="ON" checked="checked" /></td>
-            </tr>
-            <tr>
-                <td>Paul</td>
-                <td><input type="checkbox" name="Add" value="ON" checked="checked" /></td>
-            </tr>
-        </tbody>
-    </table>
-    <br/>
-    <input type="submit" value="Launch game" name="newgame" />
-</form>
+<?php
+$title = 'Create a new game';
+$this->headTitle($title);
+?>
+
+<?php if (!empty($info)) : ?>
+<div class="alert alert-danger">
+	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	<strong><?php echo $this->escapeHtml($info); ?></strong>
+</div>
+<?php endif; ?>
+
+<h1><?php echo $this->escapeHtml($title); ?></h1>
+
+<?php
+$form->setAttribute('action', $this->url('game', array('action' => 'new')));
+$form->setAttribute('class', 'form-horizontal');
+$form->setAttribute('role', 'form');
+
+$choiceContent = array();
+
+foreach ($friends as $friend) {
+	array_push($choiceContent, $friend->login);
+}
+
+for ($i = 0; $i < count($choiceContent); $i++) {
+	$checkbox = new Zend\Form\Element\Checkbox('choice' . $i);
+	$checkbox->setUseHiddenElement(true);
+	$checkbox->setCheckedValue($choiceContent[$i]);
+	$checkbox->setAttribute('class', 'form-control');
+	$checkbox->setAttribute('id', 'inputChoice' . $i);
+	
+	$form->add($checkbox);
+}
+
+$form->get('submit-new-game')->setAttribute('class', 'btn btn-default');
+
+$form->prepare();
+?>
+
+<?php echo $this->form()->openTag($form); ?>
+<?php for ($i = 0; $i < count($choiceContent); $i++) : ?>
+<div class="form-group">
+	<label for="inputChoice<?php echo $i; ?>" class="col-sm-2 control-label"><?php echo $choiceContent[$i]; ?></label>
+	<div class="col-sm-1">
+		<?php echo $this->formRow($form->get('choice' . $i)); ?>
+	</div>
+</div>
+<?php endfor; ?>
+<div class="form-group">
+	<div class="col-sm-offset-2 col-sm-10">
+		<?php echo $this->formSubmit($form->get('submit-new-game')); ?>
+	</div>
+</div>
+<?php echo $this->form()->closeTag(); ?>
