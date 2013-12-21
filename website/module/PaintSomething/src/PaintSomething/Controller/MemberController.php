@@ -1,6 +1,8 @@
 <?php
 namespace PaintSomething\Controller;
 
+use PaintSomething\Form\AddFriendForm;
+use PaintSomething\Model\Friends;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
@@ -52,9 +54,41 @@ class MemberController extends AbstractActionController {
     public function friendsAction() {
 		$userId = $this->getUsersTable()->getUserIdByLogin($this->params()->fromRoute('name'));
 		$friendsId = $this->getFriendsTable()->getFriendsIdOfUserById($userId);
+		$info = '';
+	
+		$form = new AddFriendForm();
+        $request = $this->getRequest();
+		
+        if ($request->isPost()) {
+            $friend = new Friends();
+            $form->setInputFilter($friend->getInputFilter());
+            $form->setData($request->getPost());
+			
+            if ($form->isValid()) {
+				$friendId = $this->getUsersTable()->getUserIdByLogin($form->getData()['username']);
+				
+				if ($friendId == -1) {
+					$info = 'User "' . $form->getData()['username'] . '" does not exist.';
+				} else if ($friendId == $userId) {
+					$info = 'You cannot be your friend.';
+				} else if (in_array($friendId, $friendsId)) {
+					$info = $form->getData()['username'] . ' is already your friend.';
+				} else {
+					$data = array(
+						'id_user1' => $userId,
+						'id_user2' => $friendId,
+						'confirmed' => 0,
+					);
+					$friend->exchangeArray($data);
+					$this->getFriendsTable()->saveFriends($friend);
+				}
+            }
+        }
 	
 		return new ViewModel(array(
-            'friends' => $this->getUsersTable()->fetchUsersById($friendsId),
+            'friends' => (count($friendsId) > 0) ? $this->getUsersTable()->fetchUsersById($friendsId) : array(),
+			'form' => $form,
+			'info' => $info,
         ));
     }
     

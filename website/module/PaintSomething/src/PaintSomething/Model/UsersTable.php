@@ -46,6 +46,10 @@ class UsersTable {
 		
 		$resultSet = $this->tableGateway->selectWith($select);
 		
-		return $resultSet->current()->id;
+		if ($resultSet->count() > 0) {
+			return $resultSet->current()->id;
+		} else {
+			return -1;
+		}
 	}
 }
