@@ -61,7 +61,11 @@ class UsersTable {
 		
 		$resultSet = $this->tableGateway->selectWith($select);
 		
-		return $resultSet->current()->password;
+		if ($resultSet->count() > 0) {
+			return $resultSet->current()->password;
+		} else {
+			return false;
+		}
 	}
 	
 	public function editUsersByIdWithData($userId, $data) {
