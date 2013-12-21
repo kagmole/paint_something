@@ -7,6 +7,7 @@ use PaintSomething\Form\SignUpForm;
 use PaintSomething\Form\SignUpFormFilter;
 use PaintSomething\Model\Users;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Session\Container;
 use Zend\View\Model\ViewModel;
 
 class HomeController extends AbstractActionController {
@@ -22,7 +23,7 @@ class HomeController extends AbstractActionController {
     }
 
     public function indexAction() {
-		
+	
     }
     
     public function signinAction() {
@@ -43,7 +44,8 @@ class HomeController extends AbstractActionController {
 				$db_password = $this->getUsersTable()->getUserPasswordByLogin($input_login);
 				
 				if ($db_password && $db_password == sha1($input_password)) {
-					$_SESSION['id'] = $this->getUsersTable()->getUserIdByLogin($input_login);
+					$nm_authInfo = new Container('authentification_info');
+					$nm_authInfo->login = $input_login;
 					
 					return $this->redirect()->toRoute('member', array('name' => $input_login));
 				} else {
@@ -88,7 +90,8 @@ class HomeController extends AbstractActionController {
 						
 						$this->getUsersTable()->saveUsersWithData($data);
 						
-						$_SESSION['id'] = $this->getUsersTable()->getUserIdByLogin($input_login);
+						$nm_authInfo = new Container('authentification_info');
+						$nm_authInfo->login = $input_login;
 					
 						return $this->redirect()->toRoute('member', array('name' => $input_login));
 					} else {
