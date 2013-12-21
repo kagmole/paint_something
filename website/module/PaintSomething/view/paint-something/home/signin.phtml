@@ -2,22 +2,50 @@
 $title = 'Sign in';
 $this->headTitle($title);
 ?>
-<form class="form-horizontal" role="form">
+
+<?php if (!empty($info)) : ?>
+<div class="alert alert-danger">
+	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	<strong><?php echo $this->escapeHtml($info); ?></strong>
+</div>
+<?php endif; ?>
+
+<h1><?php echo $this->escapeHtml($title); ?></h1>
+
+<?php
+$form->setAttribute('action', $this->url('home', array('action' => 'signin')));
+$form->setAttribute('class', 'form-horizontal');
+$form->setAttribute('role', 'form');
+
+$form->get('login')->setAttribute('class', 'form-control');
+$form->get('login')->setAttribute('id', 'inputLogin');
+$form->get('login')->setAttribute('placeholder', 'Email or Username');
+
+$form->get('password')->setAttribute('class', 'form-control');
+$form->get('password')->setAttribute('id', 'inputPassword');
+$form->get('password')->setAttribute('placeholder', 'Password');
+
+$form->get('submit-sign-in')->setAttribute('class', 'btn btn-default');
+
+$form->prepare();
+?>
+
+<?php echo $this->form()->openTag($form); ?>
 	<div class="form-group">
-		<label for="inputEmail3" class="col-sm-2 control-label">Login</label>
+		<label for="inputLogin" class="col-sm-2 control-label">Login</label>
 		<div class="col-sm-3">
-			<input type="email" class="form-control" id="inputEmail3" placeholder="Email or Username">
+			<?php echo $this->formRow($form->get('login')); ?>
 		</div>
     </div>
     <div class="form-group">
-		<label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+		<label for="inputPassword" class="col-sm-2 control-label">Password</label>
 		<div class="col-sm-3">
-			<input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+			<?php echo $this->formRow($form->get('password')); ?>
 		</div>
     </div>
     <div class="form-group">
 		<div class="col-sm-offset-2 col-sm-10">
-			<button type="submit" class="btn btn-default">Sign in</button>
+			<?php echo $this->formSubmit($form->get('submit-sign-in')); ?>
 		</div>
     </div>
 	<div class="form-group">
@@ -25,4 +53,4 @@ $this->headTitle($title);
 			<button type="button" class="btn btn-link">Not signed up ? Come join us !</button>
 		</div>
 	</div>
-</form>
+<?php echo $this->form()->closeTag(); ?>
