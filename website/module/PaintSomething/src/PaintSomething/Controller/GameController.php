@@ -15,6 +15,8 @@ class GameController extends AbstractActionController {
     }
     
     public function playAction() {
-    
+		return new ViewModel(array(
+			'gameId'=>$this->params()->fromRoute('id'),
+		));
     }
 }
