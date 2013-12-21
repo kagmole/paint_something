@@ -1,160 +1,106 @@
-<head>
+<?php
 
-  <title>Paint Something</title>
+$this->headTitle("Game");
+?>
 
-  <!-- CSS -->
-  <style type="text/css">
-  canvas
-  {
-    border: 1px solid black; /* We add a border */
-    cursor : url(<?php echo $this->basePath('img/pencil.cur') ?>), pointer; /* When the cursor is over the drawing panel, we set it as a pencil */
-  }
-  </style>
+<!-- CSS -->
+<style type="text/css">
+	canvas
+	{
+		border: 1px solid black; /* We add a border */
+		cursor : url(<?php echo $this->basePath('img/pencil.cur') ?>), pointer; /* When the cursor is over the drawing panel, we set it as a pencil */
+	}
+</style>
 
-  <!-- We include the jscolor library so we can easily get a color picker -->
-  <script type="text/javascript" src=<?php echo $this->basePath('js/jscolor.js') ?>></script>
+<!-- We include the jscolor library so we can easily get a color picker -->
+<script type="text/javascript" src=<?php echo $this->basePath('js/jscolor.js') ?>></script>
 
-  <!-- Javascript -->
-  <script type="text/javascript">
+<!-- Javascript -->
+<script type="text/javascript" src=<?php echo $this->basePath('js/draw.js') ?>></script>
 
-  var drawingWidth = 4; // width of lines (and other drawings)
-  
-  window.onload = initContext; // We initiate the context on page loading
+<script type="text/javascript">
+	// Function that exports our canvas drawing as an image
+	// It dosen't lay in the draw.js because we need some zend utilities
+	function exportCanvasImage(){
+		var dataURL = canvas.toDataURL();
+		document.getElementById("canvasImage").src = dataURL;
 
-  var canvas = null; // We define a variable for the canvas (drawing panel)
-  var exportButton = null; // We define a variable for the export button (used to export drawings as images)
-  var colorPicker = null; // We define a variable for the color picker
-  
-  var c = null; // 2D context
-  
-  var p1 = null; // last point (begining of a line)
-  var p2 = null; // current point (end of a line)
+		$.ajax({
+			type: "POST",
+			url: "<?php echo $this->basePath('savePicture.php')?>",
+			data: { 
+				imgBase64: dataURL,
+				gameId: "<?php echo $gameId;?>"
+			}
+		}).done(function(o) {
+			console.log('saved'); 
+		});
+	}
+</script>
 
-  // We define a vector as an 'x'and a 'y' coordinates
-  function Vector(x, y){
-    this.x=x;
-    this.y=y;
-  }
-
-  // We inittiate the canvas context
-  function initContext() {    
-
-    // We get elements from html
-    canvas = document.getElementById("myCanvas");
-    exportButton = document.getElementById("exportButton");
-    colorPicker = document.getElementById("colorPicker");
-
-    // We get the canvas context
-    c = canvas.getContext('2d');
-    c.lineWidth = drawingWidth; // We set the line width
-
-    // We add actions for some events
-    exportButton.onclick = exportCanvasImage;
-    colorPicker.onchange = changeColor;
-    canvas.onmousedown = handleMouseDown;
-    canvas.onmousemove = handleMouseMove;
-    canvas.onmouseup = handleMouseUp;
-
-    return true;
-  }
-
-  // Function to update the pencil color from the color picker
-  function changeColor()
-  {
-    c.strokeStyle = colorPicker.value;
-  }
-
-  // Function to draw a line from pointA to pointB (pointA and pointB are "Vector objects")
-  function drawLine(pointA, pointB) {
-    c.moveTo(pointA.x, pointA.y);
-    c.lineTo(pointB.x, pointB.y);
-    c.stroke();
-  }
-
-  // Function to get the mouse current position as a "Vector object"
-  function getMousePosition(event)
-  {
-    var mousePos = new Vector(0, 0);
-    var rect = canvas.getBoundingClientRect();
-
-    mousePos.x = event.clientX;
-    mousePos.y = event.clientY;
-
-    mousePos.x -= rect.left;
-    mousePos.y -= rect.top;
-
-    return mousePos;
-  }
-
-  // Function that handles mouse move
-  function handleMouseMove(event) {
-    event = event || window.event; // compatibility trick
-    if(event.which == 1) // left mouse button
-    {
-      p2 = getMousePosition(event);
-      c.beginPath();
-      drawLine(p1, p2);
-      c.closePath();
-      p1 = p2; 
-    }
-  }
-
-  // Function that handles mouse pressed
-  function handleMouseDown(event) {
-    event = event || window.event; // compatibility trick
-    event.preventDefault();
-    if(event.which == 1) // left mouse button
-    {
-      p1 = getMousePosition(event);
-    }
-  }
-
-  // Function that handles mouse released
-  function handleMouseUp(event) {
-    event = event || window.event; // compatibility trick
-    if(event.which == 1) // left mouse button
-    {
-      p1 = null;
-      p2 = null;
-    }
-  }
-
-  // Function that exports our canvas drawing as an image
-  function exportCanvasImage(){
-	var dataURL = canvas.toDataURL();
-	document.getElementById("canvasImage").src = dataURL;
+<?php switch ($_GET['test'] ):
+	case 1: ?>
 	
-	$.ajax({
-		type: "POST",
-		url: "<?php echo $this->basePath('savePicture.php')?>",
-		data: { 
-			imgBase64: dataURL,
-			gameId: "<?php echo $gameId;?>"
-		}
-	}).done(function(o) {
-		console.log('saved'); 
-	});
-  }
+	En attente des autres joueurs</br>
+	[list des joureurs]
+	
+<?php break;
+    case 2:?>
+	<div class="text-center">
+		[Nom joueur] veut jouer avec vous !</br>
+		<button type="button" class="btn btn-default btn-lg">
+			<span class="glyphicon glyphicon-ok"></span>
+		</button>
+		<button type="button" class="btn btn-default btn-lg">
+			<span class="glyphicon glyphicon-remove"></span>
+		</button>
+	</div>
+	
+<?php break;
+    case 3:?>
+	
+	<div id="paintingEditor">
+		Color : <input id="colorPicker" class="color" value="000000">
+		<canvas id="myCanvas" width="800" height="600">
+			Your browser does not support the HTML5 canvas tag.
+		</canvas>
+		<button id="exportButton" type="button">Export image</button>
+	</div>
 
-  </script>
+	<div id="rendingPanel"> 
+		<img id="canvasImage">
+	</div>
 
-</head>
+<?php break;
+    case 4:?>
+		<div class="row">
+			<p class="text-center">Waiting on the painting ...</p>
+		</div>
+<?php break;
+    case 5:?>
+	
+	<div class="text-center">
+		[Proposition LIST][name] </br>
+	</div>
+	
+	<img src="<?php echo file_get_contents('http://'.$_SERVER['HTTP_HOST'].$this->basePath().'/img/games/0') ?>"/>
+	
+<?php break;
+    case 6:?>
+	
+	<div class="text-center">
+		[input from zend]
+		<button type="button" class="btn btn-default">suggest</button>
+		
+	</div>
+	<img src="<?php echo file_get_contents('http://'.$_SERVER['HTTP_HOST'].$this->basePath().'/img/games/0') ?>"/>
+	
+<?php break;
+    case 7:?>
+	
+	<div class="text-center">
+	[list of all dudes with points]
+	</div>
+	
+<?php endswitch; ?>
 
-
-<body>
-
-  <h1>Paint Something</h1>
-
-  <div id="paintingEditor">
-    Color : <input id="colorPicker" class="color" value="000000">
-    <canvas id="myCanvas" width="800" height="600">
-      Your browser does not support the HTML5 canvas tag.
-    </canvas>
-    <button id="exportButton" type="button">Export image</button>
-  </div>
-
-  <div id="rendingPanel"> 
-    <img id="canvasImage">
-  </div>
-
-</body>
