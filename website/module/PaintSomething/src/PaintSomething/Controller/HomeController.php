@@ -59,6 +59,9 @@ class HomeController extends AbstractActionController {
 					$nm_authInfo = new Container('authentification_info');
 					$nm_authInfo->login = $input_login;
 					
+					/* Update last connection info */
+					$this->getUsersTable()->editUsersByIdWithData($this->getUsersTable()->getUserIdByLogin($input_login), array('date_last_connection' => date("Y-m-d\TH:i:s\Z", time())));
+					
 					/* Go to profile page */
 					return $this->redirect()->toRoute('member', array('name' => $input_login));
 				} else {

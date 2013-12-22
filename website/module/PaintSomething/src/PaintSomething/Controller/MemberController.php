@@ -142,10 +142,12 @@ class MemberController extends AbstractActionController {
 					$data = array(
 						'id_user1' => $userId,
 						'id_user2' => $friendId,
-						'confirmed' => 0,
+						'confirmed' => 1,
 					);
 					$friend->exchangeArray($data);
 					$this->getFriendsTable()->saveFriends($friend);
+					
+					return $this->redirect()->toRoute('member', array('action' => 'friends', 'name' => $nm_authInfo->login));
 				}
             }
         }
