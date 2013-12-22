@@ -149,9 +149,9 @@ class MemberController extends AbstractActionController {
 		$gamesId = $this->getUsersGamesTable()->getGamesIdOfUserById($userId);
 		
 		return new ViewModel(array(
-			'pending_games' => $this->getGamesTable()->fetchPendingGamesById($gamesId),
-			'running_games' => $this->getGamesTable()->fetchRunningGamesById($gamesId),
-			'finished_games' => $this->getGamesTable()->fetchFinishedGamesById($gamesId),
+			'pending_games' => (count($gamesId) > 0) ? $this->getGamesTable()->fetchPendingGamesById($gamesId) : array(),
+			'running_games' => (count($gamesId) > 0) ? $this->getGamesTable()->fetchRunningGamesById($gamesId) : array(),
+			'finished_games' => (count($gamesId) > 0) ? $this->getGamesTable()->fetchFinishedGamesById($gamesId) : array(),
 		));
     }
     

@@ -1,7 +1,19 @@
 <?php
-
-$this->headTitle("Game");
+$title = 'Play a game';
+$this->headTitle($title);
 ?>
+
+<?php if (!empty($info)) : ?>
+<div class="alert alert-danger">
+	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	<strong><?php echo $this->escapeHtml($info); ?></strong>
+</div>
+<?php endif; ?>
+
+<!-- We show page content only if there is no error -->
+<?php if ($game_state != 0) : ?>
+
+<h1><?php echo 'Game ' . $game_data['id']; ?></h1>
 
 <!-- CSS -->
 <style type="text/css">
@@ -23,14 +35,13 @@ $this->headTitle("Game");
 	// It dosen't lay in the draw.js because we need some zend utilities
 	function exportCanvasImage(){
 		var dataURL = canvas.toDataURL();
-		document.getElementById("canvasImage").src = dataURL;
 
 		$.ajax({
 			type: "POST",
 			url: "<?php echo $this->basePath('savePicture.php')?>",
 			data: { 
 				imgBase64: dataURL,
-				gameId: "<?php echo $gameId;?>"
+				gameId: "<?php echo $game_data['id'];?>"
 			}
 		}).done(function(o) {
 			console.log('saved'); 
@@ -38,69 +49,110 @@ $this->headTitle("Game");
 	}
 </script>
 
-<?php switch ($_GET['test'] ):
+<?php switch ($game_state):
 	case 1: ?>
 	
-	En attente des autres joueurs</br>
-	[list des joureurs]
+<?php
+$form_accept_invitation->setAttribute('class', 'form-horizontal');
+$form_accept_invitation->setAttribute('role', 'form');
+$form_accept_invitation->setAttribute('action', $this->url('game', array('action' => 'play', 'id' => $game_data['id'])));
+
+$form_accept_invitation->get('submit-accept-invitation')->setAttribute('class', 'btn btn-default');
+$form_accept_invitation->get('submit-accept-invitation')->setAttribute('type', 'submit');
+
+$form_accept_invitation->get('submit-decline-invitation')->setAttribute('class', 'btn btn-default');
+$form_accept_invitation->get('submit-decline-invitation')->setAttribute('type', 'submit');
+
+$form_accept_invitation->prepare();
+?>
+
+<?php echo $this->form()->openTag($form_accept_invitation); ?>
+<div class="form-group">
+	<div class="col-sm-3">
+		<?php echo $this->escapeHtml($painter_data['login']) . ' wants to play with you!'; ?>
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-3">
+		<?php echo $this->formSubmit($form_accept_invitation->get('submit-accept-invitation')); ?>
+		<?php echo $this->formSubmit($form_accept_invitation->get('submit-decline-invitation')); ?>
+	</div>
+</div>
+<?php echo $this->form()->closeTag(); ?>
 	
 <?php break;
     case 2:?>
-	<div class="text-center">
-		[Nom joueur] veut jouer avec vous !</br>
-		<button type="button" class="btn btn-default btn-lg">
-			<span class="glyphicon glyphicon-ok"></span>
-		</button>
-		<button type="button" class="btn btn-default btn-lg">
-			<span class="glyphicon glyphicon-remove"></span>
-		</button>
-	</div>
-	
+<div class="text-center">	
+	<?php echo 'Some players still do not have accepted the game invitation. Time limit to accept: ' . $game_data['date_start'] . '.'; ?>
+</div>
 <?php break;
     case 3:?>
 	
-	<div id="paintingEditor">
-		Color : <input id="colorPicker" class="color" value="000000">
-		<canvas id="myCanvas" width="800" height="600">
-			Your browser does not support the HTML5 canvas tag.
-		</canvas>
-		<button id="exportButton" type="button">Export image</button>
-	</div>
-
-	<div id="rendingPanel"> 
-		<img id="canvasImage">
-	</div>
+<div id="paintingEditor">
+	Color : <input id="colorPicker" class="color" value="000000">
+	<canvas id="myCanvas" width="500" height="500">
+		Your browser does not support the HTML5 canvas tag.
+	</canvas>
+	<button id="exportButton" type="button">Save image</button>
+</div>
 
 <?php break;
     case 4:?>
-		<div class="row">
-			<p class="text-center">Waiting on the painting ...</p>
-		</div>
+<div class="text-center">	
+	<?php echo $this->escapeHtml($painter_data['login']) . ' is still drawing. Come back at ' . $game_data['date_start'] . '.'; ?>
+</div>
 <?php break;
     case 5:?>
 	
-	<div class="text-center">
-		[Proposition LIST][name] </br>
+<?php
+$form_suggest_word->setAttribute('class', 'form-horizontal');
+$form_suggest_word->setAttribute('role', 'form');
+$form_suggest_word->setAttribute('action', $this->url('game', array('action' => 'play', 'id' => $game_data['id'])));
+
+$form_suggest_word->get('word')->setAttribute('class', 'form-control');
+$form_suggest_word->get('word')->setAttribute('type', 'text');
+$form_suggest_word->get('word')->setAttribute('id', 'inputWord');
+
+$form_suggest_word->get('submit-suggest-word')->setAttribute('class', 'btn btn-default');
+$form_suggest_word->get('submit-suggest-word')->setAttribute('type', 'submit');
+
+$form_suggest_word->prepare();
+?>
+
+<?php echo $this->form()->openTag($form_suggest_word); ?>
+<div class="form-group">
+	<div class="col-sm-3">
+		<img src="<?php echo file_get_contents('http://'.$_SERVER['HTTP_HOST'].$this->basePath().'/img/games/'.$game_data['id']) ?>"/>
 	</div>
-	
-	<img src="<?php echo file_get_contents('http://'.$_SERVER['HTTP_HOST'].$this->basePath().'/img/games/0') ?>"/>
+</div>
+<div class="form-group">
+	<label for="inputWord" class="col-sm-2 control-label">What is this?</label>
+	<div class="col-sm-3">
+		<?php echo $this->formRow($form_suggest_word->get('word')); ?>
+	</div>
+	<div class="col-sm-6">
+		<?php echo $this->formSubmit($form_suggest_word->get('submit-suggest-word')); ?>
+	</div>
+</div>
+<?php echo $this->form()->closeTag(); ?>
 	
 <?php break;
     case 6:?>
-	
-	<div class="text-center">
-		[input from zend]
-		<button type="button" class="btn btn-default">suggest</button>
-		
-	</div>
-	<img src="<?php echo file_get_contents('http://'.$_SERVER['HTTP_HOST'].$this->basePath().'/img/games/0') ?>"/>
+<div class="text-center">	
+	<?php echo 'Nobody guessed your image for the moment. Time limit to guess: ' . $game_data['date_find_limit'] . '.'; ?>
+</div>
+<img src="<?php echo file_get_contents('http://'.$_SERVER['HTTP_HOST'].$this->basePath().'/img/games/'.$game_data['id']) ?>"/>
 	
 <?php break;
     case 7:?>
-	
-	<div class="text-center">
-	[list of all dudes with points]
-	</div>
+<div class="text-left">
+	<dl class="dl-horizontal col-md-offset-2">
+		<?php for ($i = 0; $i < count($users_data); $i++) : ?>
+		<dt><?php echo $users_data[$i]['login'] . ':'; ?></dt>
+		<dd><?php echo $users_games_data[$i]['score'] . ' pts.'; ?></dd>
+		<?php endfor; ?>
+	</dl>
+</div>
 	
 <?php endswitch; ?>
-
+<?php endif; ?>

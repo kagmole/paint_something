@@ -2,6 +2,7 @@
 namespace PaintSomething\Model;
 
 use Zend\Db\Sql\Select;
+use Zend\Db\Sql\Where;
 use Zend\Db\TableGateway\TableGateway;
 
 class GamesTable {
@@ -16,6 +17,15 @@ class GamesTable {
         $resultSet = $this->tableGateway->select();
         return $resultSet;
     }
+	
+	public function fetchGameById($gameId) {
+		$where = new Where();    
+		$where->like('id', $gameId);
+	
+		$resultSet = $this->tableGateway->select($where);
+		
+		return $resultSet;
+	}
 	
 	public function fetchPendingGamesById($ids) {
 		$select = new Select();
