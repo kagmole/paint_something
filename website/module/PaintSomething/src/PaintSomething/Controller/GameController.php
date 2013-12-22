@@ -123,7 +123,7 @@ class GameController extends AbstractActionController {
 						/* Start a new game : choose a word to draw */
 						$dictionarySet = $this->getDictionaryTable()->fetchAll();
 						
-						$id_dictionary = Rand::getInteger(0, $dictionarySet->count());
+						$id_dictionary = Rand::getInteger(0, $dictionarySet->count() - 1);
 					
 						$newGame = new Games();
 						
