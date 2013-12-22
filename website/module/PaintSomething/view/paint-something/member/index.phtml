@@ -4,6 +4,10 @@ $title =  $user->login . "'s profile";
 $this->headTitle($title);
 ?>
 
+<div class="col-md-offset-2">
+	<h1><?php echo $this->escapeHtml($title); ?></h1>
+</div>
+
 <div class="row">
 	<div class="col-md-4">
 		<dl class="dl-horizontal">
