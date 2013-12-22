@@ -1,6 +1,7 @@
 <?php
 namespace PaintSomething\Model;
 
+use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 use Zend\Db\TableGateway\TableGateway;
@@ -58,5 +59,43 @@ class GamesTable {
 		$resultSet = $this->tableGateway->selectWith($select);
 		
 		return $resultSet;
+	}
+	
+	public function getLastCreatedGameId() {
+		$select = new Select();
+		$select->from('games');
+		$select->columns(array('id' => new Expression('MAX(id)')));
+		$select->where('1');
+		
+		$resultSet = $this->tableGateway->selectWith($select);
+		
+		return $resultSet->current()->id;
+	}
+	
+	public function deleteGamesById($gameId) {
+		$where = new Where();
+		$where->like('id', $gameId);
+		
+		$this->tableGateway->delete($where);
+	}
+	
+	public function editGamesByIdWithData($gameId, $data) {
+		$where = new Where();    
+		$where->like('id', $gameId);	
+		
+		$this->tableGateway->update($data, $where);
+	}
+	
+	public function saveGames($newGame) {
+		$data = array(
+			'date_creation' => $newGame->date_creation,
+			'date_start' => $newGame->date_start,
+			'date_find_limit' => $newGame->date_find_limit,
+			'rounds_count' => $newGame->rounds_count,
+			'started' => $newGame->started,
+			'finished' => $newGame->finished,
+        );
+	
+		$this->tableGateway->insert($data);
 	}
 }

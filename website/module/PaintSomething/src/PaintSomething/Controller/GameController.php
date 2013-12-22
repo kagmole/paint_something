@@ -99,8 +99,46 @@ class GameController extends AbstractActionController {
 					array_pop($players);
 					
 					if (count($players) > 1) {
-						// create a game
-						//return $this->redirect()->toRoute('game', array('action' => 'play', 'id' => ''));
+						$newGame = new Games();
+						
+						$dataNewGame = array(
+							'date_creation' => date("Y-m-d\TH:i:s\Z", time()),
+							'date_start' => date("Y-m-d\TH:i:s\Z", time() + 300),
+							'date_find_limit' => date("Y-m-d\TH:i:s\Z", time() + 600),
+							'rounds_count' => 0,
+							'started' => 0,
+							'finished' => 0,
+						);
+						$newGame->exchangeArray($dataNewGame);
+						$this->getGamesTable()->saveGames($newGame);
+						$newGameId = $this->getGamesTable()->getLastCreatedGameId();
+						
+						foreach ($players as $player) {
+							$invitedFriendId = $this->getUsersTable()->getUserIdByLogin($player);
+							
+							$newUserGame = new UsersGames();
+							
+							$dataNewUserGame = array(
+								'id_user' => $invitedFriendId,
+								'id_game' => $newGameId,
+								'score' => 0,
+								'is_ready' => 0,
+								'is_painter' => 0,
+							);
+							$newUserGame->exchangeArray($dataNewUserGame);
+							$this->getUsersGamesTable()->saveUsersGames($newUserGame);
+						}
+						$dataNewUserGame = array(
+							'id_user' => $userId,
+							'id_game' => $newGameId,
+							'score' => 0,
+							'is_ready' => 1,
+							'is_painter' => 1,
+						);
+						$newUserGame->exchangeArray($dataNewUserGame);
+						$this->getUsersGamesTable()->saveUsersGames($newUserGame);
+						
+						return $this->redirect()->toRoute('game', array('action' => 'play', 'id' => $newGameId));
 					} else {
 						$info = 'You must invite at least 2 friends';
 					}				
@@ -192,19 +230,27 @@ class GameController extends AbstractActionController {
 				$current_painter = $connectedUserGameData->is_painter == 1 ? true : false;
 				
 				/* Is everybody ready? */
-				$all_ready = true;
+				$not_ready_count = 0;
 
 				foreach ($arrayUsersGamesData as $userGameData) {
 					if ($userGameData['is_ready'] == 0) {
-						$all_ready = false;
-						break;
+						$not_ready_count++;
 					}
 				}
 				
 				/* Look for the painter */
-				for ($i = 0; $i < count($arrayUsersGamesData) ; $i++) {
-					if ($arrayUsersGamesData[$i]['is_painter'] == 1) {
-						foreach ($arrayUsersData[$i] as $key => $value) {
+				$id_painter = 0;
+				
+				foreach ($arrayUsersGamesData as $userGameData) {
+					if ($userGameData['is_painter'] == 1) {
+						$id_painter = $userGameData['id_user'];
+						break;
+					}
+				}
+				
+				foreach ($arrayUsersData as $userData) {
+					if ($userData['id'] == $id_painter) {
+						foreach ($userData as $key => $value) {
 							$arrayPainterData[$key] = $value;
 						}
 						break;
@@ -224,7 +270,7 @@ class GameController extends AbstractActionController {
 				/* Assign value to game state variable, depending on results above-written */
 				if (!$current_ready) {
 					$gameState = 1;
-				} else if (!$all_ready) {
+				} else if ($not_ready_count != 0) {
 					$gameState = 2;
 				} else if ($before_start) {
 					$gameState = $current_painter ? 3 : 4;
@@ -249,10 +295,34 @@ class GameController extends AbstractActionController {
 					$formSuggestWord->setData($request->getPost());
 					
 					if ($gameState == 1 && $formAcceptInvitation->isValid()) {
+					
 						if (isset($formAcceptInvitation->getData()['submit-accept-invitation'])) {
-							// TODO player accepted => create game?
+							$data = array(
+								'is_ready' => 1,
+							);
+							
+							foreach ($arrayUsersGamesData as $userGameData) {							
+								if ($userGameData['id_user'] == $connectedUserGameData->id_user) {
+									$this->getUsersGamesTable()->editUsersGamesByIdWithData($userGameData['id'], $data);
+									break;
+								}
+							}
+							
+							if ($not_ready_count == 1) {
+								$data = array(
+									'started' => 1,
+								);
+								
+								$this->getGamesTable()->editGamesByIdWithData($arrayGameData['id'], $data);
+							}
+							
+							return $this->redirect()->toRoute('game', array('action' => 'play', 'id' => $arrayGameData['id']));
+							
 						} else {
-							// TODO player declined => destroy game?
+							$this->getGamesTable()->deleteGamesById($arrayGameData['id']);
+							$this->getUsersGamesTable()->deleteUsersGamesByGameId($arrayGameData['id']);
+							
+							return $this->redirect()->toRoute('member', array('action' => 'games', 'name' => $nm_authInfo->login));
 						}
 					}
 					

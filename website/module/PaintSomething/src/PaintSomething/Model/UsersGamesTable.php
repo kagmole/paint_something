@@ -2,6 +2,7 @@
 namespace PaintSomething\Model;
 
 use Zend\Db\Sql\Select;
+use Zend\Db\Sql\Where;
 use Zend\Db\TableGateway\TableGateway;
 
 class UsersGamesTable {
@@ -70,5 +71,31 @@ class UsersGamesTable {
 		}
 		
 		return $usersId;
+	}
+	
+	public function deleteUsersGamesByGameId($gameId) {
+		$where = new Where();
+		$where->like('id_game', $gameId);
+		
+		$this->tableGateway->delete($where);
+	}
+	
+	public function editUsersGamesByIdWithData($userGameId, $data) {
+		$where = new Where();    
+		$where->like('id', $userGameId);	
+		
+		$this->tableGateway->update($data, $where);
+	}
+	
+	public function saveUsersGames($newUserGame) {
+		$data = array(
+			'id_user' => $newUserGame->id_user,
+			'id_game' => $newUserGame->id_game,
+			'score' => $newUserGame->score,
+			'is_ready' => $newUserGame->is_ready,
+			'is_painter' => $newUserGame->is_painter,
+        );
+	
+		$this->tableGateway->insert($data);
 	}
 }
