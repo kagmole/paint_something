@@ -131,8 +131,8 @@ class GameController extends AbstractActionController {
 						$dataNewGame = array(
 							'id_dictionary' => $id_dictionary,
 							'date_creation' => date("Y-m-d\TH:i:s\Z", time()),
-							'date_start' => date("Y-m-d\TH:i:s\Z", time() + 120),
-							'date_find_limit' => date("Y-m-d\TH:i:s\Z", time() + 240),
+							'date_start' => date("Y-m-d\TH:i:s\Z", time() + 300),
+							'date_find_limit' => date("Y-m-d\TH:i:s\Z", time() + 600),
 							'rounds_count' => 0,
 							'started' => 0,
 							'finished' => 0,
@@ -354,8 +354,8 @@ class GameController extends AbstractActionController {
 							if ($not_ready_count == 1) {
 								$data = array(
 									'started' => 1,
-									'date_start' => date("Y-m-d\TH:i:s\Z", time() + 120),
-									'date_find_limit' => date("Y-m-d\TH:i:s\Z", time() + 240),
+									'date_start' => date("Y-m-d\TH:i:s\Z", time() + 300),
+									'date_find_limit' => date("Y-m-d\TH:i:s\Z", time() + 600),
 								);
 								
 								$this->getGamesTable()->editGamesByIdWithData($arrayGameData['id'], $data);
@@ -401,8 +401,8 @@ class GameController extends AbstractActionController {
 							
 								$data = array(
 									'id_dictionary' => $id_dictionary,
-									'date_start' => date("Y-m-d\TH:i:s\Z", time() + 120),
-									'date_find_limit' => date("Y-m-d\TH:i:s\Z", time() + 240),
+									'date_start' => date("Y-m-d\TH:i:s\Z", time() + 300),
+									'date_find_limit' => date("Y-m-d\TH:i:s\Z", time() + 600),
 									'rounds_count' => $arrayGameData['rounds_count'],
 								);
 							}							
