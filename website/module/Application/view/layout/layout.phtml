@@ -51,8 +51,10 @@
 						
 						<?php else: ?>  
 							<li class="active"><a href="<?php echo $this->url('members-list') ?>"><?php echo $this->translate('Members list') ?></a></li>
-							<li class="active"><a href="<?php echo $this->url('game') ?>"><?php echo $this->translate('Game') ?></a></li>
-							<!--<li class="active"><a href="<?php echo $this->url('game', array('action' => 'new')) ?>"><?php echo $this->translate('New game') ?></a></li>-->
+							<li class="active"><a href="<?php echo $this->url('member', array('name' => $nm_authInfo->login,
+																							  'action' => 'games')) ?>"><?php echo $this->translate('My Games') ?></a></li>
+							<li class="active"><a href="<?php echo $this->url('game', array('action' => 'new')) ?>"><?php echo $this->translate('New game') ?></a></li>
+							<li class="active"><a href="<?php echo $this->url('member', array('name' => $nm_authInfo->login)) ?>"><?php echo $this->translate('Profile') ?></a></li>
 							<li class="active"><a href="<?php echo $this->url('home', array('action' => 'logout')) ?>"><?php echo $this->translate('Logout') ?></a></li>
 						<?php endif; ?>
 						<li class="active"><a href="<?php echo $this->url('home', array('action' => 'about')) ?>"><?php echo $this->translate('About') ?></a></li>
