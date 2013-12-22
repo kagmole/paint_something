@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client: 127.0.0.1
--- Généré le: Dim 22 Décembre 2013 à 19:12
+-- Généré le: Dim 22 Décembre 2013 à 19:17
 -- Version du serveur: 5.6.11
 -- Version de PHP: 5.5.3
 
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` varchar(64) NOT NULL,
   `email` varchar(40) NOT NULL,
   `date_creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `date_last_connection` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_last_connection` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `activated` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
