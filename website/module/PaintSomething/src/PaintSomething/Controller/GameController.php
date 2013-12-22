@@ -70,7 +70,7 @@ class GameController extends AbstractActionController {
     }
     
     public function newAction() {		
-		// if the user isn't connected redirect to home
+		/* if the user isn't connected redirect to home */
 		$nm_authInfo = new Container('authentification_info');
 		
 		if(!isset($nm_authInfo->login)){
@@ -81,41 +81,53 @@ class GameController extends AbstractActionController {
 		$friendsId = $this->getFriendsTable()->getFriendsIdOfUserById($userId);
 		$info = '';
 		
+		/* Prepare the "New game" form */
 		$form = new NewGameForm();
 		$request = $this->getRequest();
 		
-		if (count($friendsId) > 1) {					
+		/* Check if the user has enough friends to start a party */
+		if (count($friendsId) > 0) {
+			/* If we got a POST request */
 			if ($request->isPost()) {
 				$count = 0;
 			
+				/* How much checkboxes did the user check? */
 				foreach ($request->getPost() as $key => $value) {
 					if (!empty($value)) {
 						$count++;
 					}
 				}
-			
+				
 				$filter = new NewGameFormFilter();
+				
+				/* Generate a filter, depending on his number of friends (e.g. : 6 friends = 6 checkboxes to check) */
 				$filter->generateCheckboxesInputFilterByCount(count($friendsId));
 				$form->setInputFilter($filter->getInputFilter());
 				$form->setData($request->getPost());
 				
+				/* If the form is valid, according to the filter */
 				if ($form->isValid()) {
 					$players = array();
 				
+					/* The value of the checkboxes contains the friends name */
 					foreach ($form->getData() as $key => $value) {
 						if(!empty($value)) {
 							array_push($players, $value);
 						}
 					}
+					/* The last value is the value of the submit button : just pop it away */
 					array_pop($players);
 					
-					if (count($players) > 1) {
+					/* If he has at least choose 1 friend */
+					if (count($players) > 0) {
+						/* Start a new game : choose a word to draw */
 						$dictionarySet = $this->getDictionaryTable()->fetchAll();
 						
 						$id_dictionary = Rand::getInteger(0, $dictionarySet->count());
 					
 						$newGame = new Games();
 						
+						/* Set timers + info and put data into database */
 						$dataNewGame = array(
 							'id_dictionary' => $id_dictionary,
 							'date_creation' => date("Y-m-d\TH:i:s\Z", time()),
@@ -129,6 +141,7 @@ class GameController extends AbstractActionController {
 						$this->getGamesTable()->saveGames($newGame);
 						$newGameId = $this->getGamesTable()->getLastCreatedGameId();
 						
+						/* For each player, we must create link between them and the new game (UsersTable <= UsersGamesTable => GamesTable) */
 						foreach ($players as $player) {
 							$invitedFriendId = $this->getUsersTable()->getUserIdByLogin($player);
 							
@@ -144,6 +157,8 @@ class GameController extends AbstractActionController {
 							$newUserGame->exchangeArray($dataNewUserGame);
 							$this->getUsersGamesTable()->saveUsersGames($newUserGame);
 						}
+						
+						/* The user himself must have a link between his table and the game he created - he is ready and the painter by default */
 						$dataNewUserGame = array(
 							'id_user' => $userId,
 							'id_game' => $newGameId,
@@ -154,6 +169,7 @@ class GameController extends AbstractActionController {
 						$newUserGame->exchangeArray($dataNewUserGame);
 						$this->getUsersGamesTable()->saveUsersGames($newUserGame);
 						
+						/* Creation of the game succesful: go to the page of the new game */
 						return $this->redirect()->toRoute('game', array('action' => 'play', 'id' => $newGameId));
 					} else {
 						$info = 'You must invite at least 2 friends';
@@ -172,7 +188,7 @@ class GameController extends AbstractActionController {
     }
     
     public function playAction() {
-		// if the user isn't connected redirect to home
+		/* If the user isn't connected redirect to home */
 		$nm_authInfo = new Container('authentification_info');
 		
 		if(!isset($nm_authInfo->login)){
@@ -193,15 +209,17 @@ class GameController extends AbstractActionController {
 		 */
 		$gameState = 0;
 		
-		// Donné par adresse -> vérifier
+		/* The game id is defined by url: check it */
 		$gameData = $this->getGamesTable()->fetchGameById($this->params()->fromRoute('id'));
 		
+		/* If the id exists */
 		if (count($gameData) > 0) {
 			$gameData = $gameData->current();
 		
-			// Vérifier qu'il fait bien partie du jeu
+			/* Is the current user a player of this game? */
 			$connectedUserGameData = $this->getUsersGamesTable()->fetchUserGameByIds($this->getUsersTable()->getUserIdByLogin($nm_authInfo->login), $gameData->id);
 			
+			/* If this is a player of this game */
 			if (count($connectedUserGameData) > 0) {
 				$connectedUserGameData = $connectedUserGameData->current();
 			
@@ -210,7 +228,9 @@ class GameController extends AbstractActionController {
 				
 				$usersGamesData = $this->getUsersGamesTable()->fetchUsersGamesByIds($usersId, $gameData->id);
 				
+				/* We have to travel the sets more than one time */
 				/* Because ResultSet Zend's iterators usages are uniques, we must save ResultSet data in arrays */
+				/* Theses sets have a "toArray()" method, but it seems that it is not working */
 				$arrayGameData = array();
 				$arrayPainterData = array();
 				$arrayUsersData = array();
@@ -315,8 +335,9 @@ class GameController extends AbstractActionController {
 					$formSuggestWord->setInputFilter($filterSuggestWord->getInputFilter());
 					$formSuggestWord->setData($request->getPost());
 					
+					/* The user must accept or decline the invitation */
 					if ($gameState == 1 && $formAcceptInvitation->isValid()) {
-					
+						/* The user accepted */
 						if (isset($formAcceptInvitation->getData()['submit-accept-invitation'])) {
 							$data = array(
 								'is_ready' => 1,
@@ -329,6 +350,7 @@ class GameController extends AbstractActionController {
 								}
 							}
 							
+							/* If he was the last to accept the game, launch the game */
 							if ($not_ready_count == 1) {
 								$data = array(
 									'started' => 1,
@@ -339,9 +361,11 @@ class GameController extends AbstractActionController {
 								$this->getGamesTable()->editGamesByIdWithData($arrayGameData['id'], $data);
 							}
 							
+							/* Reload page (reload data to print and/or the game state) */
 							return $this->redirect()->toRoute('game', array('action' => 'play', 'id' => $arrayGameData['id']));
 							
 						} else {
+							/* The user declined: destroy the game and the links between this game and the players */
 							$this->getGamesTable()->deleteGamesById($arrayGameData['id']);
 							$this->getUsersGamesTable()->deleteUsersGamesByGameId($arrayGameData['id']);
 							
@@ -349,7 +373,9 @@ class GameController extends AbstractActionController {
 						}
 					}
 					
+					/* The user must guess a word */
 					if ($gameState == 5 && $formSuggestWord->isValid()) {
+						/* If he guessed right */
 						if ($mysterious_word == $formSuggestWord->getData()['word']) {
 							$data = array(
 								'score' => $connectedUserGameData->score + 100,
@@ -357,8 +383,10 @@ class GameController extends AbstractActionController {
 							
 							$this->getUsersGamesTable()->editUsersGamesByIdWithData($connectedUserGameData->id, $data);
 							
+							/* Increment the number of rounds passed */
 							$arrayGameData['rounds_count']++;
 							
+							/* If we already done 5 rounds, the game finished */
 							if ($arrayGameData['rounds_count'] > 5) {
 								$data = array(
 									'date_start' => date("Y-m-d\TH:i:s\Z", 0),
@@ -366,6 +394,7 @@ class GameController extends AbstractActionController {
 									'finished' => 1,
 								);
 							} else {
+								/* If not, the "guesser" is the new "painter" and a new round start */
 								$dictionarySet = $this->getDictionaryTable()->fetchAll();
 						
 								$id_dictionary = Rand::getInteger(0, $dictionarySet->count());
@@ -379,9 +408,11 @@ class GameController extends AbstractActionController {
 							}							
 							$this->getGamesTable()->editGamesByIdWithData($arrayGameData['id'], $data);
 							
+							/* Switch painter role */
 							$this->getUsersGamesTable()->editUsersGamesByIdWithData($connectedUserGameData->id, array('is_painter' => 1));
 							$this->getUsersGamesTable()->editUsersGamesByIdWithData($id_usersGames_painter, array('is_painter' => 0));
 							
+							/* Reload page (reload data to print and/or the game state) */
 							return $this->redirect()->toRoute('game', array('action' => 'play', 'id' => $arrayGameData['id']));
 						} else {
 							$info = 'This is not "' . $formSuggestWord->getData()['word'] . '".';

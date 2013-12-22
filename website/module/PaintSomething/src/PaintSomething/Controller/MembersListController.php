@@ -18,8 +18,9 @@ class MembersListController extends AbstractActionController {
     }
  
     public function indexAction() { 
-		// if the user isn't connected redirect to home
+		/* If the user isn't connected redirect to home */
 		$nm_authInfo = new Container('authentification_info');
+		
 		if(!isset($nm_authInfo->login)){
 			return $this->redirect()->toRoute('home', array('action' => 'signin'));
 		}

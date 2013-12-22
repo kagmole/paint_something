@@ -3,6 +3,7 @@ $title = 'Create a new game';
 $this->headTitle($title);
 ?>
 
+<!-- Bootstrap alert for the user notifications -->
 <?php if (!empty($info)) : ?>
 <div class="alert alert-danger">
 	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -12,6 +13,7 @@ $this->headTitle($title);
 
 <h1><?php echo $this->escapeHtml($title); ?></h1>
 
+<!-- Configuration of the form: add Bootstrap classes, id, content... -->
 <?php
 $form->setAttribute('action', $this->url('game', array('action' => 'new')));
 $form->setAttribute('class', 'form-horizontal');
@@ -23,6 +25,7 @@ foreach ($friends as $friend) {
 	array_push($choiceContent, $friend->login);
 }
 
+/* The number of checkboxes depends on the friends count */
 for ($i = 0; $i < count($choiceContent); $i++) {
 	$checkbox = new Zend\Form\Element\Checkbox('choice' . $i);
 	$checkbox->setUseHiddenElement(true);
@@ -38,6 +41,7 @@ $form->get('submit-new-game')->setAttribute('class', 'btn btn-default');
 $form->prepare();
 ?>
 
+<!-- Show new game form -->
 <?php echo $this->form()->openTag($form); ?>
 <?php for ($i = 0; $i < count($choiceContent); $i++) : ?>
 <div class="form-group">

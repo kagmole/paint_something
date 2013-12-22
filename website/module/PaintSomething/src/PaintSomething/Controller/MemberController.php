@@ -49,28 +49,38 @@ class MemberController extends AbstractActionController {
 	}
     
     public function editAction() {
-		// if the user isn't connected redirect to home
+		/* If the user isn't connected redirect to home */
 		$nm_authInfo = new Container('authentification_info');
+		
 		if(!isset($nm_authInfo->login)){
 			return $this->redirect()->toRoute('home', array('action' => 'signin'));
+		}
+		
+		/* If the user is trying to edit an other page than is own, redirect to the homepage */
+		if ($this->params()->fromRoute('name') != $nm_authInfo->login) {
+			return $this->redirect()->toRoute('home');
 		}
 		
 		$userId = $this->getUsersTable()->getUserIdByLogin($this->params()->fromRoute('name'));
 		$info = '';
 	
+		/* Prepare the "Edit member" form */
 		$form = new EditMemberForm();
 		$request = $this->getRequest();
 		
+		/* If we got a POST request */
 		if ($request->isPost()) {
 			$user = new Users();
 			$form->setInputFilter($user->getInputFilter());
 			$form->setData($request->getPost());
 			
+			/* If the form is valid, according to the filter */
 			if ($form->isValid()) {
 				$data = array(
 					'email' => $form->getData()['email'],
 				);
 				
+				/* Did he tried to change his password? */
 				if (!empty($form->getData()['new-password'])) {
 					if ($form->getData()['new-password'] == $form->getData()['confirm-password']) {
 						$data['password'] = sha1($form->getData()['new-password']);
@@ -78,6 +88,7 @@ class MemberController extends AbstractActionController {
 						$info = 'The two passwords were not the same.';
 					}
 				}
+				/* Update data */
 				$this->getUsersTable()->editUsersByIdWithData($userId, $data);
 			}
 		}
@@ -90,27 +101,37 @@ class MemberController extends AbstractActionController {
     }
     
     public function friendsAction() {
-		// if the user isn't connected redirect to home
+		/* If the user isn't connected redirect to home */
 		$nm_authInfo = new Container('authentification_info');
+		
 		if(!isset($nm_authInfo->login)){
 			return $this->redirect()->toRoute('home', array('action' => 'signin'));
+		}
+		
+		/* If the user is trying to view an other page than is own, redirect to the homepage */
+		if ($this->params()->fromRoute('name') != $nm_authInfo->login) {
+			return $this->redirect()->toRoute('home');
 		}
 		
 		$userId = $this->getUsersTable()->getUserIdByLogin($this->params()->fromRoute('name'));
 		$friendsId = $this->getFriendsTable()->getFriendsIdOfUserById($userId);
 		$info = '';
 	
+		/* Prepare the "Add friend" form */
 		$form = new AddFriendForm();
         $request = $this->getRequest();
 		
+		/* If we got a POST request */
         if ($request->isPost()) {
             $friend = new Friends();
             $form->setInputFilter($friend->getInputFilter());
             $form->setData($request->getPost());
 			
+			/* If the form is valid, according to the filter */
             if ($form->isValid()) {
 				$friendId = $this->getUsersTable()->getUserIdByLogin($form->getData()['username']);
 				
+				/* Check if the login exists, if it is not the user himself, if he is not already his friend */
 				if ($friendId == -1) {
 					$info = 'User "' . $form->getData()['username'] . '" does not exist.';
 				} else if ($friendId == $userId) {
@@ -139,12 +160,19 @@ class MemberController extends AbstractActionController {
     
     public function gamesAction() {
 	
-		// if the user isn't connected redirect to home
+		/* If the user isn't connected redirect to home */
 		$nm_authInfo = new Container('authentification_info');
+		
 		if(!isset($nm_authInfo->login)){
 			return $this->redirect()->toRoute('home', array('action' => 'signin'));
 		}
 		
+		/* If the user is trying to view an other page than is own, redirect to the homepage */
+		if ($this->params()->fromRoute('name') != $nm_authInfo->login) {
+			return $this->redirect()->toRoute('home');
+		}
+		
+		/* Prepare datas for the view */
 		$userId = $this->getUsersTable()->getUserIdByLogin($this->params()->fromRoute('name'));
 		$gamesId = $this->getUsersGamesTable()->getGamesIdOfUserById($userId);
 		
@@ -156,8 +184,9 @@ class MemberController extends AbstractActionController {
     }
     
     public function indexAction() {	
-		// if the user isn't connected redirect to home
+		/* if the user isn't connected redirect to home */
 		$nm_authInfo = new Container('authentification_info');
+		
 		if(!isset($nm_authInfo->login)){
 			return $this->redirect()->toRoute('home', array('action' => 'signin'));
 		}

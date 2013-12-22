@@ -3,6 +3,7 @@ $title = 'Play a game';
 $this->headTitle($title);
 ?>
 
+<!-- Bootstrap alert for the user notifications -->
 <?php if (!empty($info)) : ?>
 <div class="alert alert-danger">
 	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -49,6 +50,7 @@ $this->headTitle($title);
 	}
 </script>
 
+<!-- The user must accept or decline an invitation -->
 <?php switch ($game_state):
 	case 1: ?>
 	
@@ -79,12 +81,15 @@ $form_accept_invitation->prepare();
 	</div>
 </div>
 <?php echo $this->form()->closeTag(); ?>
-	
+
+<!-- The user already accepted, but the game is not launched yet -->
 <?php break;
     case 2:?>
 <div class="text-center">	
 	<?php echo '<p>Some players still do not have accepted the game invitation. Time limit to accept: ' . $game_data['date_start'] . '.</p>'; ?>
 </div>
+
+<!-- The user must draw an image -->
 <?php break;
     case 3:?>
 <div class="text-center">	
@@ -98,11 +103,14 @@ $form_accept_invitation->prepare();
 	<button id="exportButton" type="button">Save image</button>
 </div>
 
+<!-- The user is not the drawer and must wait the draw -->
 <?php break;
     case 4:?>
 <div class="text-center">	
 	<?php echo '<p>' . $this->escapeHtml($painter_data['login']) . ' is still drawing. Come back at ' . $game_data['date_start'] . '.</p>'; ?>
 </div>
+
+<!-- The user can start to guess a word for the draw -->
 <?php break;
     case 5:?>
 	
@@ -137,14 +145,16 @@ $form_suggest_word->prepare();
 	</div>
 </div>
 <?php echo $this->form()->closeTag(); ?>
-	
+
+<!-- The user was the drawer and the others are guessing his work -->
 <?php break;
     case 6:?>
 <div class="text-center">	
 	<?php echo '<p>Nobody guessed your image for the moment. Time limit to guess: ' . $game_data['date_find_limit'] . '.</p>'; ?>
 </div>
 <img src="<?php echo file_get_contents('http://'.$_SERVER['HTTP_HOST'].$this->basePath().'/img/games/'.$game_data['id']) ?>"/>
-	
+
+<!-- The game is finished: just show scores -->
 <?php break;
     case 7:?>
 <div class="text-center">
