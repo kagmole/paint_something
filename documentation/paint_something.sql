@@ -1,9 +1,9 @@
-﻿-- phpMyAdmin SQL Dump
+-- phpMyAdmin SQL Dump
 -- version 4.0.4.1
 -- http://www.phpmyadmin.net
 --
 -- Client: 127.0.0.1
--- Généré le: Mer 04 Décembre 2013 à 09:52
+-- Généré le: Dim 22 Décembre 2013 à 19:12
 -- Version du serveur: 5.6.11
 -- Version de PHP: 5.5.3
 
@@ -25,6 +25,46 @@ USE `paint_something`;
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `dictionary`
+--
+
+CREATE TABLE IF NOT EXISTS `dictionary` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `word` varchar(255) NOT NULL,
+  `difficulty` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `word` (`word`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=21 ;
+
+--
+-- Contenu de la table `dictionary`
+--
+
+INSERT INTO `dictionary` (`id`, `word`, `difficulty`) VALUES
+(0, 'Raspberry', 1),
+(1, 'Pinapple', 1),
+(2, 'Banana', 1),
+(3, 'Car', 1),
+(4, 'House', 1),
+(5, 'Bird', 1),
+(6, 'Cat', 1),
+(7, 'Dog', 1),
+(8, 'Tour Eiffel', 2),
+(9, 'Imp', 2),
+(10, 'Santa Claus', 2),
+(11, 'Pizzaiolo', 3),
+(12, 'USA', 2),
+(13, 'China', 2),
+(14, 'Brazil', 2),
+(15, 'Clams', 3),
+(16, 'Sleeping', 2),
+(17, 'Sport', 3),
+(18, 'Dress', 2),
+(19, 'Ham', 2);
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `friends`
 --
 
@@ -37,14 +77,16 @@ CREATE TABLE IF NOT EXISTS `friends` (
   PRIMARY KEY (`id`),
   KEY `id_user1` (`id_user1`),
   KEY `id_user2` (`id_user2`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
 
 --
 -- Contenu de la table `friends`
 --
 
 INSERT INTO `friends` (`id`, `id_user1`, `id_user2`, `date_creation`, `confirmed`) VALUES
-(2, 6, 7, '2013-12-04 08:43:24', 1);
+(3, 7, 6, '2013-12-21 08:33:08', 0),
+(5, 7, 9, '2013-12-21 19:08:05', 0),
+(6, 7, 8, '2013-12-21 19:08:37', 0);
 
 -- --------------------------------------------------------
 
@@ -54,21 +96,22 @@ INSERT INTO `friends` (`id`, `id_user1`, `id_user2`, `date_creation`, `confirmed
 
 CREATE TABLE IF NOT EXISTS `games` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_dictionary` int(10) unsigned NOT NULL,
   `date_creation` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `date_start` timestamp NULL DEFAULT NULL,
   `date_find_limit` timestamp NULL DEFAULT NULL,
-  `image_path` varchar(40) NOT NULL,
+  `rounds_count` int(11) NOT NULL DEFAULT '0',
   `started` tinyint(1) NOT NULL,
   `finished` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=31 ;
 
 --
 -- Contenu de la table `games`
 --
 
-INSERT INTO `games` (`id`, `date_creation`, `date_start`, `date_find_limit`, `image_path`, `started`, `finished`) VALUES
-(1, '2013-11-30 23:00:00', '2013-12-02 07:00:00', '2013-12-02 23:00:00', 'img/image001.png', 1, 1);
+INSERT INTO `games` (`id`, `id_dictionary`, `date_creation`, `date_start`, `date_find_limit`, `rounds_count`, `started`, `finished`) VALUES
+(30, 8, '2013-12-22 18:02:00', '2013-12-22 18:07:56', '2013-12-22 18:09:56', 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -82,17 +125,20 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` varchar(64) NOT NULL,
   `email` varchar(40) NOT NULL,
   `date_creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_last_connection` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `activated` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
 
 --
 -- Contenu de la table `users`
 --
 
-INSERT INTO `users` (`id`, `login`, `password`, `email`, `date_creation`, `activated`) VALUES
-(6, 'Michel', '10b05c446ea776cdcae1ab10f5dcdbad5eeb9250a8b6f62752e6d4e755850fab', 'frank.etienne@he-arc.ch', '2013-12-04 08:43:01', 1),
-(7, 'Daniel', 'bd3dae5fb91f88a4f0978222dfd58f59a124257cb081486387cbae9df11fb879', 'dany.jupille@he-arc.ch', '2013-12-04 08:43:01', 1);
+INSERT INTO `users` (`id`, `login`, `password`, `email`, `date_creation`, `date_last_connection`, `activated`) VALUES
+(6, 'Michel', '2c7f9fd20fbeb41ce8894ec4653d66fa7f3b6e1a', 'etienne.frank@he-arc.ch', '2013-12-06 07:21:40', '2013-12-04 08:43:01', 1),
+(7, 'Daniel', '3d0f3b9ddcacec30c4008c5e030e6c13a478cb4f', 'dany.jupille@he-arc.ch', '2013-12-06 07:21:40', '2013-12-04 08:43:01', 1),
+(8, 'Bernard', '0b8e0b1f37895567811a9d382317c26804f86e3a', 'bernard.octet@yopmail.com', '2013-12-21 15:06:09', '2013-12-21 15:06:09', 1),
+(9, 'Toto', '0b9c2625dc21ef05f6ad4ddf47c5f203837aa32c', 'toto.usertest@yopmail.com', '2013-12-21 15:12:07', '2013-12-21 15:12:07', 1);
 
 -- --------------------------------------------------------
 
@@ -110,15 +156,16 @@ CREATE TABLE IF NOT EXISTS `users_games` (
   PRIMARY KEY (`id`),
   KEY `id_game` (`id_game`),
   KEY `id_user` (`id_user`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=54 ;
 
 --
 -- Contenu de la table `users_games`
 --
 
 INSERT INTO `users_games` (`id`, `id_user`, `id_game`, `score`, `is_ready`, `is_painter`) VALUES
-(1, 6, 1, 100, 1, 0),
-(2, 7, 1, 30, 1, 1);
+(51, 6, 30, 100, 1, 1),
+(52, 8, 30, 0, 1, 0),
+(53, 7, 30, 0, 1, 0);
 
 --
 -- Contraintes pour les tables exportées
@@ -135,8 +182,8 @@ ALTER TABLE `friends`
 -- Contraintes pour la table `users_games`
 --
 ALTER TABLE `users_games`
-  ADD CONSTRAINT `users_games_ibfk_2` FOREIGN KEY (`id_game`) REFERENCES `games` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `users_games_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `users_games_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `users_games_ibfk_2` FOREIGN KEY (`id_game`) REFERENCES `games` (`id`) ON DELETE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
