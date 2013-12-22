@@ -1,12 +1,16 @@
 <?php
 namespace PaintSomething\Controller;
 
+use PaintSomething\Form\AcceptInvitationForm;
+use PaintSomething\Form\AcceptInvitationFormFilter;
 use PaintSomething\Form\NewGameForm;
 use PaintSomething\Form\NewGameFormFilter;
+use PaintSomething\Form\SuggestWordForm;
+use PaintSomething\Form\SuggestWordFormFilter;
 use PaintSomething\Model\Friends;
-use PaintSomething\Model\FriendsTable;
+use PaintSomething\Model\Games;
 use PaintSomething\Model\Users;
-use PaintSomething\Model\UsersTable;
+use PaintSomething\Model\UsersGames;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Session\Container;
 use Zend\View\Model\ViewModel;
@@ -14,7 +18,9 @@ use Zend\View\Model\ViewModel;
 class GameController extends AbstractActionController {
 
     protected $friendsTable;
+	protected $gamesTable;
     protected $usersTable;
+	protected $usersGamesTable;
 	
 	public function getFriendsTable() {
         if (!$this->friendsTable) {
@@ -24,6 +30,14 @@ class GameController extends AbstractActionController {
         return $this->friendsTable;
     }
     
+	public function getGamesTable() {
+        if (!$this->gamesTable) {
+            $sm = $this->getServiceLocator();
+            $this->gamesTable = $sm->get('PaintSomething\Model\GamesTable');
+        }
+        return $this->gamesTable;
+	}
+    
     public function getUsersTable() {
         if (!$this->usersTable) {
             $sm = $this->getServiceLocator();
@@ -31,13 +45,26 @@ class GameController extends AbstractActionController {
         }
         return $this->usersTable;
     }
+	
+	public function getUsersGamesTable() {
+		if (!$this->usersGamesTable) {
+			$sm = $this->getServiceLocator();
+			$this->usersGamesTable = $sm->get('PaintSomething\Model\UsersGamesTable');
+		}
+		return $this->usersGamesTable;
+	}
 
     public function indexAction() {
 		return $this->redirect()->toRoute('game', array('action' => 'new'));
     }
     
-    public function newAction() {
+    public function newAction() {		
+		// if the user isn't connected redirect to home
 		$nm_authInfo = new Container('authentification_info');
+		
+		if(!isset($nm_authInfo->login)){
+			return $this->redirect()->toRoute('home', array('action' => 'signin'));
+		}
 	
 		$userId = $this->getUsersTable()->getUserIdByLogin($nm_authInfo->login);
 		$friendsId = $this->getFriendsTable()->getFriendsIdOfUserById($userId);
@@ -91,9 +118,164 @@ class GameController extends AbstractActionController {
     }
     
     public function playAction() {
+		// if the user isn't connected redirect to home
+		$nm_authInfo = new Container('authentification_info');
+		
+		if(!isset($nm_authInfo->login)){
+			return $this->redirect()->toRoute('home', array('action' => 'signin'));
+		}
+	
+		$info = '';
+		
+		/* 
+		 * 0 <=> Error occured while loading data
+		 * 1 <=> I must accept or decline
+		 * 2 <=> I accepted to play, not the others
+		 * 3 <=> I have to draw
+		 * 4 <=> I have to wait the drawing
+		 * 5 <=> I must guess the word behind the drawing
+		 * 6 <=> The others must guess the word behind my drawing
+		 * 7 <=> The game is finished
+		 */
+		$gameState = 0;
+		
+		// Donné par adresse -> vérifier
+		$gameData = $this->getGamesTable()->fetchGameById($this->params()->fromRoute('id'));
+		
+		if (count($gameData) > 0) {
+			$gameData = $gameData->current();
+		
+			// Vérifier qu'il fait bien partie du jeu
+			$connectedUserGameData = $this->getUsersGamesTable()->fetchUserGameByIds($this->getUsersTable()->getUserIdByLogin($nm_authInfo->login), $gameData->id);
+			
+			if (count($connectedUserGameData) > 0) {
+				$connectedUserGameData = $connectedUserGameData->current();
+			
+				$usersId = $this->getUsersGamesTable()->getUsersIdOfGameById($gameData->id);
+				$usersData = $this->getUsersTable()->fetchUsersById($usersId);
+				
+				$usersGamesData = $this->getUsersGamesTable()->fetchUsersGamesByIds($usersId, $gameData->id);
+				
+				/* Because ResultSet Zend's iterators usages are uniques, we must save ResultSet data in arrays */
+				$arrayGameData = array();
+				$arrayPainterData = array();
+				$arrayUsersData = array();
+				$arrayUsersGamesData = array();
+				
+				foreach ($gameData as $key => $value) {
+					$arrayGameData[$key] = $value;
+				}
+				
+				foreach ($usersData as $userData) {
+					$arrayContent = array();
+				
+					foreach ($userData as $key => $value) {
+						$arrayContent[$key] = $value;
+					}
+					array_push($arrayUsersData, $arrayContent);
+				}
+				
+				foreach ($usersGamesData as $userGameData) {
+					$arrayContent = array();
+					
+					foreach ($userGameData as $key => $value) {
+						$arrayContent[$key] = $value;
+					}
+					array_push($arrayUsersGamesData, $arrayContent);
+				}
+				
+				/* Determine game state */
+				/* Am I ready? */
+				$current_ready = $connectedUserGameData->is_ready == 1 ? true : false;
+				
+				/* Am I the painter? */
+				$current_painter = $connectedUserGameData->is_painter == 1 ? true : false;
+				
+				/* Is everybody ready? */
+				$all_ready = true;
+
+				foreach ($arrayUsersGamesData as $userGameData) {
+					if ($userGameData['is_ready'] == 0) {
+						$all_ready = false;
+						break;
+					}
+				}
+				
+				/* Look for the painter */
+				for ($i = 0; $i < count($arrayUsersGamesData) ; $i++) {
+					if ($arrayUsersGamesData[$i]['is_painter'] == 1) {
+						foreach ($arrayUsersData[$i] as $key => $value) {
+							$arrayPainterData[$key] = $value;
+						}
+						break;
+					}
+				}
+				
+				$currentTimeStamp = time();
+				$startTimeStamp = strtotime($arrayGameData['date_start']);
+				$findLimitTimeStamp = strtotime($arrayGameData['date_find_limit']);
+				
+				/* Are we before start time? */
+				$before_start = ($currentTimeStamp < $startTimeStamp) ? true : false;
+				
+				/* Are we before find limit time? */
+				$before_find_limit = ($currentTimeStamp < $findLimitTimeStamp) ? true : false;
+				
+				/* Assign value to game state variable, depending on results above-written */
+				if (!$current_ready) {
+					$gameState = 1;
+				} else if (!$all_ready) {
+					$gameState = 2;
+				} else if ($before_start) {
+					$gameState = $current_painter ? 3 : 4;
+				} else if ($before_find_limit) {
+					$gameState = $current_painter ? 6 : 5;
+				} else {
+					$gameState = 7;
+				}
+				
+				/* Forms creations */
+				$formAcceptInvitation = new AcceptInvitationForm();
+				$formSuggestWord = new SuggestWordForm();
+				$request = $this->getRequest();
+				
+				if ($request->isPost()) {
+					$filterAcceptInvitation = new AcceptInvitationFormFilter();
+					$formAcceptInvitation->setInputFilter($filterAcceptInvitation->getInputFilter());
+					$formAcceptInvitation->setData($request->getPost());
+					
+					$filterSuggestWord = new SuggestWordFormFilter();
+					$formSuggestWord->setInputFilter($filterSuggestWord->getInputFilter());
+					$formSuggestWord->setData($request->getPost());
+					
+					if ($gameState == 1 && $formAcceptInvitation->isValid()) {
+						if (isset($formAcceptInvitation->getData()['submit-accept-invitation'])) {
+							// TODO player accepted => create game?
+						} else {
+							// TODO player declined => destroy game?
+						}
+					}
+					
+					if ($gameState == 5 && $formSuggestWord->isValid()) {
+						// TODO check the word $formSuggestWord->getData()['word'];
+					}
+				}
+			} else {
+				$info = 'You are not a player of this game.';
+			}
+		} else {
+			$info = 'This game does not exist.';
+		}
+	
 		return new ViewModel(array(
-			'gameId'=>$this->params()->fromRoute('id'),
+			'info' => $info,
+			'form_accept_invitation' => isset($formAcceptInvitation) ? $formAcceptInvitation : false,
+			'form_suggest_word' => isset($formSuggestWord) ? $formSuggestWord : false,
+			'game_state' => $gameState,
+			'game_data' => isset($arrayGameData) ? $arrayGameData  : false,
+			'painter_data' => isset($arrayPainterData) ? $arrayPainterData : false,
+			'users_data' => isset($arrayUsersData) ? $arrayUsersData : false,
+			'users_games_data' => isset($arrayUsersGamesData) ? $arrayUsersGamesData : false,
 		));
     }
-
 }
