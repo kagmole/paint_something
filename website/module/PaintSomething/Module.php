@@ -1,6 +1,8 @@
 <?php
 namespace PaintSomething;
 
+use PaintSomething\Model\Dictionary;
+use PaintSomething\Model\DictionaryTable;
 use PaintSomething\Model\Friends;
 use PaintSomething\Model\FriendsTable;
 use PaintSomething\Model\Games;
@@ -35,6 +37,18 @@ class Module
     public function getServiceConfig() {
         return array(
             'factories' => array(
+				'PaintSomething\Model\DictionaryTable' =>  function($sm) {
+                    $tableGateway = $sm->get('DictionaryTableGateway');
+                    $table = new DictionaryTable($tableGateway);
+                    return $table;
+                },
+                'DictionaryTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Dictionary());
+                    return new TableGateway('dictionary', $dbAdapter, null, $resultSetPrototype);
+                },
+			
                 'PaintSomething\Model\FriendsTable' =>  function($sm) {
                     $tableGateway = $sm->get('FriendsTableGateway');
                     $table = new FriendsTable($tableGateway);

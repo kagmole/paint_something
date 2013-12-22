@@ -7,20 +7,31 @@ use PaintSomething\Form\NewGameForm;
 use PaintSomething\Form\NewGameFormFilter;
 use PaintSomething\Form\SuggestWordForm;
 use PaintSomething\Form\SuggestWordFormFilter;
+use PaintSomething\Model\Dictionary;
 use PaintSomething\Model\Friends;
 use PaintSomething\Model\Games;
 use PaintSomething\Model\Users;
 use PaintSomething\Model\UsersGames;
+use Zend\Math\Rand;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Session\Container;
 use Zend\View\Model\ViewModel;
 
 class GameController extends AbstractActionController {
 
+	protected $dictionaryTable;
     protected $friendsTable;
 	protected $gamesTable;
     protected $usersTable;
 	protected $usersGamesTable;
+	
+	public function getDictionaryTable() {
+        if (!$this->dictionaryTable) {
+            $sm = $this->getServiceLocator();
+            $this->dictionaryTable = $sm->get('PaintSomething\Model\DictionaryTable');
+        }
+        return $this->dictionaryTable;
+    }
 	
 	public function getFriendsTable() {
         if (!$this->friendsTable) {
@@ -99,12 +110,17 @@ class GameController extends AbstractActionController {
 					array_pop($players);
 					
 					if (count($players) > 1) {
+						$dictionarySet = $this->getDictionaryTable()->fetchAll();
+						
+						$id_dictionary = Rand::getInteger(0, $dictionarySet->count());
+					
 						$newGame = new Games();
 						
 						$dataNewGame = array(
+							'id_dictionary' => $id_dictionary,
 							'date_creation' => date("Y-m-d\TH:i:s\Z", time()),
-							'date_start' => date("Y-m-d\TH:i:s\Z", time() + 300),
-							'date_find_limit' => date("Y-m-d\TH:i:s\Z", time() + 600),
+							'date_start' => date("Y-m-d\TH:i:s\Z", time() + 120),
+							'date_find_limit' => date("Y-m-d\TH:i:s\Z", time() + 240),
 							'rounds_count' => 0,
 							'started' => 0,
 							'finished' => 0,
@@ -240,9 +256,11 @@ class GameController extends AbstractActionController {
 				
 				/* Look for the painter */
 				$id_painter = 0;
+				$id_usersGames_painter = 0;
 				
 				foreach ($arrayUsersGamesData as $userGameData) {
 					if ($userGameData['is_painter'] == 1) {
+						$id_usersGames_painter = $userGameData['id'];
 						$id_painter = $userGameData['id_user'];
 						break;
 					}
@@ -280,6 +298,9 @@ class GameController extends AbstractActionController {
 					$gameState = 7;
 				}
 				
+				/* Get and assign mysterious word to its variable */
+				$mysterious_word = $this->getDictionaryTable()->getWordById($arrayGameData['id_dictionary']);
+				
 				/* Forms creations */
 				$formAcceptInvitation = new AcceptInvitationForm();
 				$formSuggestWord = new SuggestWordForm();
@@ -311,6 +332,8 @@ class GameController extends AbstractActionController {
 							if ($not_ready_count == 1) {
 								$data = array(
 									'started' => 1,
+									'date_start' => date("Y-m-d\TH:i:s\Z", time() + 120),
+									'date_find_limit' => date("Y-m-d\TH:i:s\Z", time() + 240),
 								);
 								
 								$this->getGamesTable()->editGamesByIdWithData($arrayGameData['id'], $data);
@@ -327,7 +350,42 @@ class GameController extends AbstractActionController {
 					}
 					
 					if ($gameState == 5 && $formSuggestWord->isValid()) {
-						// TODO check the word $formSuggestWord->getData()['word'];
+						if ($mysterious_word == $formSuggestWord->getData()['word']) {
+							$data = array(
+								'score' => $connectedUserGameData->score + 100,
+							);
+							
+							$this->getUsersGamesTable()->editUsersGamesByIdWithData($connectedUserGameData->id, $data);
+							
+							$arrayGameData['rounds_count']++;
+							
+							if ($arrayGameData['rounds_count'] > 5) {
+								$data = array(
+									'date_start' => date("Y-m-d\TH:i:s\Z", 0),
+									'date_find_limit' => date("Y-m-d\TH:i:s\Z", 0),
+									'finished' => 1,
+								);
+							} else {
+								$dictionarySet = $this->getDictionaryTable()->fetchAll();
+						
+								$id_dictionary = Rand::getInteger(0, $dictionarySet->count());
+							
+								$data = array(
+									'id_dictionary' => $id_dictionary,
+									'date_start' => date("Y-m-d\TH:i:s\Z", time() + 120),
+									'date_find_limit' => date("Y-m-d\TH:i:s\Z", time() + 240),
+									'rounds_count' => $arrayGameData['rounds_count'],
+								);
+							}							
+							$this->getGamesTable()->editGamesByIdWithData($arrayGameData['id'], $data);
+							
+							$this->getUsersGamesTable()->editUsersGamesByIdWithData($connectedUserGameData->id, array('is_painter' => 1));
+							$this->getUsersGamesTable()->editUsersGamesByIdWithData($id_usersGames_painter, array('is_painter' => 0));
+							
+							return $this->redirect()->toRoute('game', array('action' => 'play', 'id' => $arrayGameData['id']));
+						} else {
+							$info = 'This is not "' . $formSuggestWord->getData()['word'] . '".';
+						}
 					}
 				}
 			} else {
@@ -342,6 +400,7 @@ class GameController extends AbstractActionController {
 			'form_accept_invitation' => isset($formAcceptInvitation) ? $formAcceptInvitation : false,
 			'form_suggest_word' => isset($formSuggestWord) ? $formSuggestWord : false,
 			'game_state' => $gameState,
+			'mysterious_word' => isset($mysterious_word) ? $mysterious_word : false,
 			'game_data' => isset($arrayGameData) ? $arrayGameData  : false,
 			'painter_data' => isset($arrayPainterData) ? $arrayPainterData : false,
 			'users_data' => isset($arrayUsersData) ? $arrayUsersData : false,

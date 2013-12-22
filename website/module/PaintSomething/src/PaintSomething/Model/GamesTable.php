@@ -88,6 +88,7 @@ class GamesTable {
 	
 	public function saveGames($newGame) {
 		$data = array(
+			'id_dictionary' => $newGame->id_dictionary,
 			'date_creation' => $newGame->date_creation,
 			'date_start' => $newGame->date_start,
 			'date_find_limit' => $newGame->date_find_limit,

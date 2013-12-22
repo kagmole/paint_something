@@ -83,11 +83,13 @@ $form_accept_invitation->prepare();
 <?php break;
     case 2:?>
 <div class="text-center">	
-	<?php echo 'Some players still do not have accepted the game invitation. Time limit to accept: ' . $game_data['date_start'] . '.'; ?>
+	<?php echo '<p>Some players still do not have accepted the game invitation. Time limit to accept: ' . $game_data['date_start'] . '.</p>'; ?>
 </div>
 <?php break;
     case 3:?>
-	
+<div class="text-center">	
+	<?php echo 'You have to draw a "' . $mysterious_word . '".'; ?>
+</div>
 <div id="paintingEditor">
 	Color : <input id="colorPicker" class="color" value="000000">
 	<canvas id="myCanvas" width="500" height="500">
@@ -99,7 +101,7 @@ $form_accept_invitation->prepare();
 <?php break;
     case 4:?>
 <div class="text-center">	
-	<?php echo $this->escapeHtml($painter_data['login']) . ' is still drawing. Come back at ' . $game_data['date_start'] . '.'; ?>
+	<?php echo '<p>' . $this->escapeHtml($painter_data['login']) . ' is still drawing. Come back at ' . $game_data['date_start'] . '.</p>'; ?>
 </div>
 <?php break;
     case 5:?>
@@ -139,12 +141,15 @@ $form_suggest_word->prepare();
 <?php break;
     case 6:?>
 <div class="text-center">	
-	<?php echo 'Nobody guessed your image for the moment. Time limit to guess: ' . $game_data['date_find_limit'] . '.'; ?>
+	<?php echo '<p>Nobody guessed your image for the moment. Time limit to guess: ' . $game_data['date_find_limit'] . '.</p>'; ?>
 </div>
 <img src="<?php echo file_get_contents('http://'.$_SERVER['HTTP_HOST'].$this->basePath().'/img/games/'.$game_data['id']) ?>"/>
 	
 <?php break;
     case 7:?>
+<div class="text-center">
+	<?php echo '<p>This game is done.</p>'; ?>
+</div>
 <div class="text-left">
 	<dl class="dl-horizontal col-md-offset-2">
 		<?php for ($i = 0; $i < count($users_data); $i++) : ?>
