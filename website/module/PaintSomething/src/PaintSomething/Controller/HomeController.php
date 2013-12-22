@@ -27,6 +27,12 @@ class HomeController extends AbstractActionController {
     }
     
     public function signinAction() {
+		// if user is still connected, redirect to the homepage
+		$nm_authInfo = new Container('authentification_info');
+		if(isset($nm_authInfo->login)){
+			return $this->redirect()->toRoute('home');
+		}
+		
 		$info = '';
 	
 		$form = new SignInForm();
@@ -61,6 +67,12 @@ class HomeController extends AbstractActionController {
     }
     
     public function signupAction() {
+		// if user is still connected, redirect to the homepage
+		$nm_authInfo = new Container('authentification_info');
+		if(isset($nm_authInfo->login)){
+			return $this->redirect()->toRoute('home');
+		}
+		
 		$info = '';
 		
 		$form = new SignUpForm();
